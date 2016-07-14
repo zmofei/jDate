@@ -1,0 +1,136 @@
+.jDate-calendar {
+    font-family: Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+    width: 300px;
+    padding: 10px;
+    box-shadow: 0 8px 9px -5px rgba(0, 0, 0, .2), 0 15px 22px 2px rgba(0, 0, 0, .14), 0 6px 28px 5px rgba(0, 0, 0, .12);
+}
+
+.jDate-calendar-table,
+.jDate-calendar-table table {
+    width: 300px;
+    text-align: center;
+    font-size: 13px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.jDate-calendar-table table th {
+    font-size: 14px;
+    font-weight: normal;
+    color: #999;
+    font-family: Roboto, sans-serif;
+}
+
+.jDate-calendar-table table td {
+    /*padding: 5px;*/
+}
+
+.jDate-calendar-table table td span {
+    transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    border-radius: 100px;
+    cursor: pointer;
+    position: relative;
+}
+
+.jDate-calendar-table table td span:hover {
+    color: #fff;
+}
+
+.jDate-calendar-table table td span div {
+    transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    background: #f44437;
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    left: 50%;
+    top: 50%;
+    border-radius: 100px;
+    opacity: 0;
+    z-index: -1;
+}
+
+.jDate-calendar-table table td span:hover div {
+    width: 28px;
+    height: 28px;
+    margin: -14px;
+    opacity: 0.5;
+}
+
+.jDate-calendar-table table td.active span {
+    font-size: 13px;
+    font-weight: 100;
+    color: rgb(255, 255, 255);
+    background-color: rgb(244, 67, 54);
+    border-radius: 100px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
+}
+
+.jDate-calendar-table table td.during span {
+    font-size: 13px;
+    color: #fff;
+    font-weight: normal;
+}
+
+.jDate-calendar-table table td.during span:hover div {
+    background: #f44437;
+    opacity: 0.8;
+}
+
+.jDate-calendar-table table td.during span div {
+    background: #f44437;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
+    width: 28px;
+    height: 28px;
+    margin: -14px;
+    opacity: 0.5;
+}
+
+.jDate-calendar-title {
+    padding: 10px 0 20px 0;
+    text-align: center;
+}
+
+.jDate-calendar-pre {
+    cursor: pointer;
+    float: left;
+    margin-left: 10px;
+    color: #666;
+}
+
+.jDate-calendar-next {
+    cursor: pointer;
+    float: right;
+    margin-right: 10px;
+    color: #666;
+}
+
+.jDate-calendar-action {
+    padding: 10px 0 5px 0;
+    text-align: center;
+}
+
+.jDate-calendar-cancel,
+.jDate-calendar-ok {
+    cursor: pointer;
+    -webkit-transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    -moz-transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    color: #f44437;
+    border: none;
+    background: none;
+    font-size: 16px;
+    width: 100px;
+    margin: 0 10px;
+    border-radius: 4px;
+    padding: 8px 0;
+    outline: none;
+}
+
+.jDate-calendar-cancel:hover,
+.jDate-calendar-ok:hover {
+    background: #e4e4e4;
+}

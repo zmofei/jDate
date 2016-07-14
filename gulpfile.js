@@ -3,7 +3,10 @@ var rollup = require('gulp-rollup');
 var babel = require('rollup-plugin-babel');
 
 
-gulp.task('default', function() {
+gulp.task('default', ['js', 'css'], function() {
+});
+
+gulp.task('js', function() {
     gulp.src('./src/**/*.js')
         .pipe(rollup({
             entry: './src/jDate.js',
@@ -15,6 +18,15 @@ gulp.task('default', function() {
             console.log('error', arguments)
         })
         .pipe(gulp.dest('./dist'));
+
+    gulp.src('./src/jDate.css')
+        .pipe(gulp.dest('./dist/jData.css'));
 });
 
-var watcher = gulp.watch('./src/**/*.js', ['default']);
+gulp.task('css', function() {
+    gulp.src('./src/jDate.css')
+        .pipe(gulp.dest('./dist/'));
+});
+
+gulp.watch('./src/**/*.js', ['default']);
+gulp.watch('./src/**/*.css', ['default']);
