@@ -156,25 +156,6 @@ var jDate = function () {
             if (this._data.config.time.type != 0) {
                 this._initEventTimer();
             }
-
-            // for animate
-            var amimates = [];
-            document.addEventListener('mousedown', function (e) {
-                var dom = e.target;
-                while (dom) {
-                    if (/material-ani/.test(dom.className)) {
-                        amimates.push(new Material(dom));
-                        break;
-                    }
-                    dom = dom.parentElement;
-                }
-            });
-
-            window.addEventListener('mouseup', function (e) {
-                for (var i in amimates) {
-                    amimates[i].hide();
-                }
-            });
         }
     }, {
         key: '_initEventCalendar',
@@ -572,5 +553,26 @@ var Material = function () {
     }]);
     return Material;
 }();
+
+// for animate
+
+
+var amimates = [];
+document.addEventListener('mousedown', function (e) {
+    var dom = e.target;
+    while (dom) {
+        if (/material-ani/.test(dom.className)) {
+            amimates.push(new Material(dom));
+            break;
+        }
+        dom = dom.parentElement;
+    }
+});
+
+window.addEventListener('mouseup', function (e) {
+    for (var i in amimates) {
+        amimates[i].hide();
+    }
+});
 
 window.jDate = jDate;

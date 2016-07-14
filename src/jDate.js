@@ -185,24 +185,6 @@ class jDate {
             this._initEventTimer();
         }
 
-        // for animate
-        var amimates = [];
-        document.addEventListener('mousedown', function(e) {
-            var dom = e.target;
-            while (dom) {
-                if (/material-ani/.test(dom.className)) {
-                    amimates.push(new Material(dom));
-                    break;
-                }
-                dom = dom.parentElement;
-            }
-        });
-
-        window.addEventListener('mouseup', function(e) {
-            for (var i in amimates) {
-                amimates[i].hide();
-            }
-        });
     }
 
     _initEventCalendar() {
@@ -588,5 +570,24 @@ class Material {
         }, 300);
     }
 }
+
+// for animate
+var amimates = [];
+document.addEventListener('mousedown', function(e) {
+    var dom = e.target;
+    while (dom) {
+        if (/material-ani/.test(dom.className)) {
+            amimates.push(new Material(dom));
+            break;
+        }
+        dom = dom.parentElement;
+    }
+});
+
+window.addEventListener('mouseup', function(e) {
+    for (var i in amimates) {
+        amimates[i].hide();
+    }
+});
 
 window.jDate = jDate;
