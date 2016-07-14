@@ -346,6 +346,7 @@
     left: 0px;
     right: 0px;
     top: 10px;
+    cursor: pointer;
 }
 
 .jDate-timer-text span {

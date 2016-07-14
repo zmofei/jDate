@@ -153,6 +153,7 @@ class jDate {
         this._timerHour = calendarTimeDom.querySelector('.jDate-timer-hour');
         this._timerTitleShow = calendarTimeDom.querySelector('.jDate-timer-title-show');
         this._timerTitleInput = calendarTimeDom.querySelector('.jDate-timer-input');
+        this._timerQuickText = calendarTimeDom.querySelector('.jDate-timer-text');
 
         // init time
         setTimeout(function() {
@@ -219,8 +220,22 @@ class jDate {
     _initEventTimer() {
         var self = this;
         var handle = self._timerHandle;
-        var input = self._timerTitleInput.querySelector('input');
 
+        //
+        self._timerQuickText.addEventListener('click', function(e) {
+            if (e.target.tagName == 'SPAN') {
+                var value = e.target.innerText;
+                var values = value.split(':').map(function(item) {
+                    return parseInt(item);
+                });
+                self._updateTime([
+                    values
+                ]);
+            }
+        });
+        //
+
+        var input = self._timerTitleInput.querySelector('input');
         self._timerTitleShow.addEventListener('click', function() {
             self._timerTitleShow.style.display = 'none';
             self._timerTitleInput.style.display = 'block';
@@ -231,10 +246,12 @@ class jDate {
             input.value = hour + ' : ' + minute;
             input.focus();
         });
+
         input.addEventListener('blur', function() {
             self._timerTitleShow.style.display = 'block';
             self._timerTitleInput.style.display = 'none';
         });
+
         input.addEventListener('keyup', function(e) {
             var value = this.value;
             var values = value.split(':').map(function(item) {
