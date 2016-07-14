@@ -5,11 +5,77 @@
     <title>jDate</title>
     <link type="text/css" rel="stylesheet" href="dist/jDate.css" />
     <script src="dist/jDate.js"></script>
+    <style>
+        .jDate-calendar {
+            float: left;
+            margin: 10px;
+        }
+    </style>
 </head>
 
 <body>
     <script>
-        var jd = new jDate();
+        // demo 1
+        var type = {
+            date: {
+                type: 1
+            }
+        }
+
+        new jDate(type);
+
+        // demo 2
+        var type = {
+            date: {
+                type: 2,
+                max: 4
+            }
+        };
+
+        var data = {
+            date: [new Date(2016, 6, 15), new Date(2016, 6, 20)]
+        }
+
+        new jDate(type, data);
+
+        // demo 3
+
+        var type = {
+            date: {
+                type: 3
+            }
+        }
+
+        var data = {
+            date: [new Date(2016, 6, 15), new Date(2016, 6, 20)]
+        }
+
+        new jDate(type, data);
+
+        // demo 4
+        var type = {
+            time: {
+                type: 1
+            }
+        }
+        var data = {
+            time: [
+                [10, 27]
+            ]
+        }
+        new jDate(type, data);
+
+
+        // demo 5
+        var type = {
+            date: {
+                type: 3
+            },
+            time: {
+                type: 1
+            }
+        }
+        new jDate(type);
     </script>
 </body>
 

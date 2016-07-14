@@ -1,5 +1,5 @@
 class jDate {
-    constructor() {
+    constructor(config, data) {
 
         this.maps = {
             month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -10,33 +10,43 @@ class jDate {
         this._data = {
             config: {
                 date: {
-                    type: 3, // 0:disable, 1: single day, 2: multi time, 3:time slot 
-                    max: 3 // for multi
+                    type: 0, // 0:disable, 1: single day, 2: multi time, 3:time slot 
+                    // max: 3 // for multi
                 },
                 time: {
-                    type: 1, // 0:disable, 1: single time,  3:time slot 
+                    type: 0, // 0:disable, 1: single time,  3:time slot 
                     // step: 60 //
                 }
             },
             choosed: {
-                date: [new Date(2016, 6, 14)],
+                date: [new Date(this._date.getFullYear(), this._date.getMonth(), this._date.getDate())],
                 time: [
-                    [12, 59]
+                    [12, 0]
                 ]
             },
             sys: {
                 dateDoms: [],
             }
+        };
+
+        if (config) {
+            for (var i in config) {
+                this._data.config[i] = config[i]
+            }
         }
-        console.log(this._data)
+
+        if (data) {
+            for (var i in data) {
+                this._data.choosed[i] = data[i]
+            }
+        }
 
         // crate dom
         this._initDom();
         // init Event
         this._initEvent();
 
-        // show month
-        this._createMonthTable();
+
     }
 
     _initDom() {
@@ -45,10 +55,14 @@ class jDate {
         calendar.className = 'jDate-calendar';
 
         // calendar
-        this._initDomCalendar();
+        if (this._data.config.date.type != 0) {
+            this._initDomCalendar();
+        }
 
         // timer
-        this._initDomTimer();
+        if (this._data.config.time.type != 0) {
+            this._initDomTimer();
+        }
 
         // action button
         var actionDom = document.createElement('div');
@@ -87,8 +101,6 @@ class jDate {
             '       </span>',
             '   </div>',
             '   <div class="jDate-calendar-table"></div>',
-            '   <div class="jDate-calendar-action">',
-            '   </div>',
         ].join('');
 
         this._calendarTable = calendarDateDom.querySelector('.jDate-calendar-table');
@@ -99,6 +111,8 @@ class jDate {
         this._calendarCurrNext = calendarDateDom.querySelector('.jDate-calendar-curr-next');
         this._calendarCurrBoxInnder = calendarDateDom.querySelector('.jDate-calendar-curr-box-inner');
         calendar.appendChild(calendarDateDom);
+        // show month
+        this._createMonthTable();
     }
 
     _initDomTimer() {
@@ -118,7 +132,7 @@ class jDate {
         }
 
         calendarTimeDom.innerHTML = [
-            '   <div class="jDate-calendar-timer">',
+            '   <div class="jDate-calendar-timer" style="' + (self._data.config.date.type == 0 ? 'border-top:none' : '') + '">',
             '       <div class="jDate-timer-title jDate-timer-input">',
             '           <input></input>',
             '       </div>',
@@ -164,8 +178,12 @@ class jDate {
     }
 
     _initEvent() {
-        this._initEventCalendar();
-        this._initEventTimer();
+        if (this._data.config.date.type != 0) {
+            this._initEventCalendar();
+        }
+        if (this._data.config.time.type != 0) {
+            this._initEventTimer();
+        }
 
         // for animate
         var amimates = [];
@@ -412,7 +430,7 @@ class jDate {
         this._calendarCurr.innerHTML = current;
         date.setMonth(date.getMonth() - 1);
         var currentPre = this.maps.month[date.getMonth()] + ' ' + date.getFullYear();
-        console.log(currentPre)
+        // console.log(currentPre)
         this._calendarCurrPre.innerHTML = currentPre;
         date.setMonth(date.getMonth() + 2);
         var currentNext = this.maps.month[date.getMonth()] + ' ' + date.getFullYear();

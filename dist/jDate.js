@@ -23,7 +23,7 @@ var createClass = function () {
 }();
 
 var jDate = function () {
-    function jDate() {
+    function jDate(config, data) {
         classCallCheck(this, jDate);
 
 
@@ -36,29 +36,35 @@ var jDate = function () {
         this._data = {
             config: {
                 date: {
-                    type: 3, // 0:disable, 1: single day, 2: multi time, 3:time slot 
-                    max: 3 // for multi
-                },
+                    type: 0 },
                 time: {
-                    type: 1 }
+                    type: 0 }
             },
             choosed: {
-                date: [new Date(2016, 6, 14)],
-                time: [[12, 59]]
+                date: [new Date(this._date.getFullYear(), this._date.getMonth(), this._date.getDate())],
+                time: [[12, 0]]
             },
             sys: {
                 dateDoms: []
             }
         };
-        console.log(this._data);
+
+        if (config) {
+            for (var i in config) {
+                this._data.config[i] = config[i];
+            }
+        }
+
+        if (data) {
+            for (var i in data) {
+                this._data.choosed[i] = data[i];
+            }
+        }
 
         // crate dom
         this._initDom();
         // init Event
         this._initEvent();
-
-        // show month
-        this._createMonthTable();
     }
 
     createClass(jDate, [{
@@ -69,10 +75,14 @@ var jDate = function () {
             calendar.className = 'jDate-calendar';
 
             // calendar
-            this._initDomCalendar();
+            if (this._data.config.date.type != 0) {
+                this._initDomCalendar();
+            }
 
             // timer
-            this._initDomTimer();
+            if (this._data.config.time.type != 0) {
+                this._initDomTimer();
+            }
 
             // action button
             var actionDom = document.createElement('div');
@@ -90,7 +100,7 @@ var jDate = function () {
             var calendarDateDom = document.createElement('div');
             calendarDateDom.className = 'jDate-calendar-date';
 
-            calendarDateDom.innerHTML = ['   <div class="jDate-calendar-title">', '       <span class="jDate-calendar-pre material-ani">', '           <div class="material"></div>', '           <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>', '       </span>', '       <span class="jDate-calendar-curr-box">', '           <span class="jDate-calendar-curr-box-inner">', '              <span class="jDate-calendar-curr-pre"></span>', '              <span class="jDate-calendar-curr"></span>', '              <span class="jDate-calendar-curr-next"></span>', '           </span>', '       </span>', '       <span class="jDate-calendar-next material-ani">', '           <div class="material"></div>', '           <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>', '       </span>', '   </div>', '   <div class="jDate-calendar-table"></div>', '   <div class="jDate-calendar-action">', '   </div>'].join('');
+            calendarDateDom.innerHTML = ['   <div class="jDate-calendar-title">', '       <span class="jDate-calendar-pre material-ani">', '           <div class="material"></div>', '           <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>', '       </span>', '       <span class="jDate-calendar-curr-box">', '           <span class="jDate-calendar-curr-box-inner">', '              <span class="jDate-calendar-curr-pre"></span>', '              <span class="jDate-calendar-curr"></span>', '              <span class="jDate-calendar-curr-next"></span>', '           </span>', '       </span>', '       <span class="jDate-calendar-next material-ani">', '           <div class="material"></div>', '           <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>', '       </span>', '   </div>', '   <div class="jDate-calendar-table"></div>'].join('');
 
             this._calendarTable = calendarDateDom.querySelector('.jDate-calendar-table');
             this._calendarPre = calendarDateDom.querySelector('.jDate-calendar-pre');
@@ -100,6 +110,8 @@ var jDate = function () {
             this._calendarCurrNext = calendarDateDom.querySelector('.jDate-calendar-curr-next');
             this._calendarCurrBoxInnder = calendarDateDom.querySelector('.jDate-calendar-curr-box-inner');
             calendar.appendChild(calendarDateDom);
+            // show month
+            this._createMonthTable();
         }
     }, {
         key: '_initDomTimer',
@@ -119,7 +131,7 @@ var jDate = function () {
                 minuteDom.push('<span>' + (i < 10 ? '0' + i : i) + '</span>');
             }
 
-            calendarTimeDom.innerHTML = ['   <div class="jDate-calendar-timer">', '       <div class="jDate-timer-title jDate-timer-input">', '           <input></input>', '       </div>', '       <div class="jDate-timer-title jDate-timer-title-show">', '           <span class="jDate-timer-hour">', '               <span class="jDate-timer-hour-in">' + hoursDom.join('') + '</span>', '           </span>', '           <span> : </span>', '           <span class="jDate-timer-minute">', '               <span class="jDate-timer-minute-in">' + minuteDom.join('') + '</span>', '           </span>', '       </div>', '       <div class="jDate-timer-barbox">', '           <div class="jDate-timer-bar-handle animate">', '	            <div class="jDate-timer-bar-handle-color"></div>', '	            <div class="jDate-timer-bar-handle-ani"></div>', '           </div>', '           <div class="jDate-timer-bar"></div>', '           <div class="jDate-timer-text">', '               <span style="left: 0;">00:00</span>', '               <span style="left: 25%;">06:00</span>', '               <span style="left: 50%;">12:00</span>', '               <span style="left: 75%;">18:00</span>', '               <span style="left: 100%;">24:00</span>', '           </div>', '       </div>', '   </div>'].join('');
+            calendarTimeDom.innerHTML = ['   <div class="jDate-calendar-timer" style="' + (self._data.config.date.type == 0 ? 'border-top:none' : '') + '">', '       <div class="jDate-timer-title jDate-timer-input">', '           <input></input>', '       </div>', '       <div class="jDate-timer-title jDate-timer-title-show">', '           <span class="jDate-timer-hour">', '               <span class="jDate-timer-hour-in">' + hoursDom.join('') + '</span>', '           </span>', '           <span> : </span>', '           <span class="jDate-timer-minute">', '               <span class="jDate-timer-minute-in">' + minuteDom.join('') + '</span>', '           </span>', '       </div>', '       <div class="jDate-timer-barbox">', '           <div class="jDate-timer-bar-handle animate">', '	            <div class="jDate-timer-bar-handle-color"></div>', '	            <div class="jDate-timer-bar-handle-ani"></div>', '           </div>', '           <div class="jDate-timer-bar"></div>', '           <div class="jDate-timer-text">', '               <span style="left: 0;">00:00</span>', '               <span style="left: 25%;">06:00</span>', '               <span style="left: 50%;">12:00</span>', '               <span style="left: 75%;">18:00</span>', '               <span style="left: 100%;">24:00</span>', '           </div>', '       </div>', '   </div>'].join('');
 
             this._timerHandle = calendarTimeDom.querySelector('.jDate-timer-bar-handle');
             this._timerMinute = calendarTimeDom.querySelector('.jDate-timer-minute');
@@ -138,8 +150,12 @@ var jDate = function () {
     }, {
         key: '_initEvent',
         value: function _initEvent() {
-            this._initEventCalendar();
-            this._initEventTimer();
+            if (this._data.config.date.type != 0) {
+                this._initEventCalendar();
+            }
+            if (this._data.config.time.type != 0) {
+                this._initEventTimer();
+            }
 
             // for animate
             var amimates = [];
@@ -380,7 +396,7 @@ var jDate = function () {
             this._calendarCurr.innerHTML = current;
             date.setMonth(date.getMonth() - 1);
             var currentPre = this.maps.month[date.getMonth()] + ' ' + date.getFullYear();
-            console.log(currentPre);
+            // console.log(currentPre)
             this._calendarCurrPre.innerHTML = currentPre;
             date.setMonth(date.getMonth() + 2);
             var currentNext = this.maps.month[date.getMonth()] + ' ' + date.getFullYear();
