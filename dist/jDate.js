@@ -71,7 +71,7 @@ var jDate = function () {
             // create calendar
             var calendar = this.calendar = document.createElement('div');
             calendar.className = 'jDate-calendar';
-            calendar.innerHTML = ['<div>', '   <div class="jDate-calendar-title">', '       <span class="jDate-calendar-pre">pre</span>', '       <span class="jDate-calendar-curr"></span>', '       <span class="jDate-calendar-next">next</span>', '   </div>', '   <div class="jDate-calendar-table"></div>', '   <div class="jDate-calendar-action">', '       <button class="jDate-calendar-cancel">cancel</button>', '       <button class="jDate-calendar-ok">ok</button>', '   </div>', '</div>'].join('');
+            calendar.innerHTML = ['<div>', '   <div class="jDate-calendar-title">', '       <span class="jDate-calendar-pre">', '           <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>', '       </span>', '       <span class="jDate-calendar-curr"></span>', '       <span class="jDate-calendar-next">', '           <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>', '       </span>', '   </div>', '   <div class="jDate-calendar-table"></div>', '   <div class="jDate-calendar-action">', '       <button class="jDate-calendar-cancel">cancel</button>', '       <button class="jDate-calendar-ok">ok</button>', '   </div>', '</div>'].join('');
 
             this._calendarTable = calendar.querySelector('.jDate-calendar-table');
             this._calendarPre = calendar.querySelector('.jDate-calendar-pre');
