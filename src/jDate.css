@@ -5,6 +5,19 @@
     box-shadow: 0 8px 9px -5px rgba(0, 0, 0, .2), 0 15px 22px 2px rgba(0, 0, 0, .14), 0 6px 28px 5px rgba(0, 0, 0, .12);
 }
 
+.jDate-target {
+    outline: none;
+    cursor: pointer;
+}
+
+.jDate-calendar-target {
+    display: none;
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left: 0;
+}
+
 .jDate-calendar-table,
 .jDate-calendar-table table {
     width: 300px;
@@ -19,10 +32,6 @@
     font-weight: normal;
     color: #999;
     font-family: Roboto, sans-serif;
-}
-
-.jDate-calendar-table table td {
-    /*padding: 5px;*/
 }
 
 .jDate-calendar-table table td span {

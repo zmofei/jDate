@@ -1,0 +1,119 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>jDate</title>
+    <link type="text/css" rel="stylesheet" href="dist/jDate.css" />
+    <script src="dist/jDate.js"></script>
+    <style>
+        /*.jDate-calendar {
+            float: left;
+            margin: 10px;
+        }*/
+    </style>
+</head>
+
+<body>
+    <p style="margin-top: 1000px;"></p>
+    <div style="position:absolute; top: 100px; left: 200px;">
+        <input type="text" id="tar" style="margin-left: 100px;">
+    </div>
+
+    <input type="text" id="tar2" style="margin-left: 400px;">
+    <p style="margin-top: 1000px;"></p>
+    <script>
+        var now = new Date('1910/12/10 00:00');
+
+        var type = {
+            target: document.getElementById('tar'),
+            date: {
+                type: 1
+            },
+            time: {
+                type: 1
+            }
+        }
+
+        var date = new jDate(type, {
+            date: [now],
+            time: [
+                [now.getHours(), now.getMinutes()]
+            ],
+            current: now
+        });
+
+        var now2 = new Date('2010/12/10 01:00');
+        var type2 = {
+            target: document.getElementById('tar2'),
+            date: {
+                type: 1
+            },
+            time: {
+                type: 1
+            }
+        }
+
+        var date2 = new jDate(type2, {
+            date: [now2],
+            time: [
+                [now2.getHours(), now2.getMinutes()]
+            ],
+            current: now2
+        });
+
+        // // demo 1
+        // var type = {
+        //     date: {
+        //         type: 1
+        //     }
+        // }
+
+        // new jDate(type);
+
+        // // demo 2
+        // var type = {
+        //     date: {
+        //         type: 2,
+        //         max: 4
+        //     }
+        // };
+
+        // var data = {
+        //     date: [new Date(2016, 6, 15), new Date(2016, 6, 20)]
+        // }
+
+        // new jDate(type, data);
+
+        // // demo 3
+
+        // var type = {
+        //     date: {
+        //         type: 3
+        //     }
+        // }
+
+        // var data = {
+        //     date: [new Date(2016, 6, 15), new Date(2016, 6, 20)]
+        // }
+
+        // new jDate(type, data);
+
+        // // demo 4
+        // var type = {
+        //     time: {
+        //         type: 1
+        //     }
+        // }
+        // var data = {
+        //     time: [
+        //         [10, 27]
+        //     ]
+        // }
+        // new jDate(type, data);
+
+
+        // demo 5
+    </script>
+</body>
+
+</html>

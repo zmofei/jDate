@@ -1,3 +1,9 @@
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+};
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -26,12 +32,11 @@ var jDate = function () {
     function jDate(config, data) {
         classCallCheck(this, jDate);
 
-
         this.maps = {
             month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         };
 
-        this._date = new Date();
+        this._date = data && data.current || new Date();
 
         this._data = {
             config: {
@@ -60,7 +65,7 @@ var jDate = function () {
                 this._data.choosed[i] = data[i];
             }
         }
-
+        // console.log(this._data.choosed)
         // crate dom
         this._initDom();
         // init Event
@@ -72,7 +77,7 @@ var jDate = function () {
         value: function _initDom() {
             // create calendar
             var calendar = this.calendar = document.createElement('div');
-            calendar.className = 'jDate-calendar';
+            calendar.className = (this._data.config.target ? 'jDate-calendar-target' : '') + ' jDate-calendar';
 
             // calendar
             if (this._data.config.date.type != 0) {
@@ -84,12 +89,16 @@ var jDate = function () {
                 this._initDomTimer();
             }
 
+            // target 
+            if (this._data.config.target) {
+                this._initDomTarget();
+            }
+
             // action button
             var actionDom = document.createElement('div');
             actionDom.className = 'jDate-calendar-action';
             actionDom.innerHTML = ['<span class="material-ani"><button class="jDate-calendar-cancel">cancel</button></span>', '<span class="material-ani"><button class="jDate-calendar-ok">ok</button></span>'].join('');
             calendar.appendChild(actionDom);
-
             //
             document.body.appendChild(calendar);
         }
@@ -148,6 +157,34 @@ var jDate = function () {
             calendar.appendChild(calendarTimeDom);
         }
     }, {
+        key: '_initDomTarget',
+        value: function _initDomTarget() {
+            var target = this._data.config.target;
+            target.className = 'jDate-target';
+            target.value = this._formatTime();
+        }
+    }, {
+        key: '_formatTime',
+        value: function _formatTime() {
+            var date = this._data.choosed.date[0];
+            var time = this._data.choosed.time[0];
+            var retStr = '';
+            // console.log(date);
+            if (date) {
+                var month = date.getMonth() + 1;
+                month = month < 10 ? '0' + month : month;
+                var _date = date.getDate();
+                _date = _date < 10 ? '0' + _date : _date;
+                retStr += date.getFullYear() + '/' + month + '/' + _date;
+            }
+            if (time) {
+                var hour = time[0] < 10 ? '0' + time[0] : time[0];
+                var minute = time[1] < 10 ? '0' + time[1] : time[1];
+                retStr += (retStr == '' ? '' : ' ') + hour + ':' + minute;
+            }
+            return retStr;
+        }
+    }, {
         key: '_initEvent',
         value: function _initEvent() {
             if (this._data.config.date.type != 0) {
@@ -156,6 +193,10 @@ var jDate = function () {
             if (this._data.config.time.type != 0) {
                 this._initEventTimer();
             }
+            if (this._data.config.target) {
+                this._initEventTarget();
+            }
+            this._initEventSys();
         }
     }, {
         key: '_initEventCalendar',
@@ -291,6 +332,106 @@ var jDate = function () {
                 canMove = false;
             });
         }
+    }, {
+        key: '_initEventTarget',
+        value: function _initEventTarget() {
+            var self = this;
+            var target = this._data.config.target;
+            target.addEventListener('mousedown', function (e) {
+                e.preventDefault();
+            });
+            target.addEventListener('click', function (e) {
+                self._show();
+            });
+        }
+    }, {
+        key: '_initEventSys',
+        value: function _initEventSys() {
+            var self = this;
+            this.calendar.querySelector('.jDate-calendar-cancel').addEventListener('click', function () {
+                self._data.choosed = self._data.sys.lastShowChoosed;
+                self._hide();
+            });
+
+            this.calendar.querySelector('.jDate-calendar-ok').addEventListener('click', function () {
+                self._freshTarget();
+                self._hide();
+            });
+            // console.log('initsys')
+            window.addEventListener('click', function (e) {
+                var target = e.target;
+                var find = false;
+                while (target) {
+                    if (target == self.calendar || target == self._data.config.target) {
+                        find = true;
+                        break;
+                    }
+                    target = target.parentNode;
+                }
+                if (!find) {
+                    // console.log(self._data.sys.lastShowChoosed)
+                    // self._data.choosed = self._data.sys.lastShowChoosed;
+                    self._hide();
+                }
+            });
+        }
+    }, {
+        key: '_show',
+        value: function _show() {
+            this._freshCalendar();
+            var calendar = this.calendar;
+            var target = this._data.config.target;
+            target.blur();
+            calendar.style.display = 'block';
+            calendar.style.top = this._getOffset(target).top + target.offsetHeight + 1 + 'px';
+            calendar.style.left = this._getOffset(target).left + 'px';
+            this._data.sys.lastShowChoosed = this._deepCopy(this._data.choosed);
+        }
+    }, {
+        key: '_hide',
+        value: function _hide() {
+            var calendar = this.calendar;
+            calendar.style.display = 'none';
+        }
+    }, {
+        key: '_getOffset',
+        value: function _getOffset(tar) {
+            var _tar = tar;
+            var top = 0;
+            var left = 0;
+            while (_tar) {
+                top += _tar.offsetTop;
+                left += _tar.offsetLeft;
+                _tar = _tar.offsetParent;
+            }
+            return {
+                top: top,
+                left: left
+            };
+        }
+    }, {
+        key: '_deepCopy',
+        value: function _deepCopy(obj) {
+            var newObj = obj;
+            if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) == 'object' && !(obj instanceof Date)) {
+                newObj = obj instanceof Array ? [] : {};
+                for (var i in obj) {
+                    newObj[i] = this._deepCopy(obj[i]);
+                }
+            }
+            return newObj;
+        }
+    }, {
+        key: '_freshTarget',
+        value: function _freshTarget() {
+            var target = this._data.config.target;
+            target.value = this._formatTime();
+        }
+    }, {
+        key: '_freshCalendar',
+        value: function _freshCalendar() {
+            this._updateMonthTable();
+        }
 
         // show month table
 
@@ -347,7 +488,10 @@ var jDate = function () {
                     var numState = '';
                     for (var j in choosedDate) {
                         var choosedStartTime = choosedDate[j];
-                        if (+_date == +choosedStartTime) {
+                        var yearEqual = _date.getFullYear() == choosedStartTime.getFullYear();
+                        var monthEqual = _date.getMonth() == choosedStartTime.getMonth();
+                        var dateEqual = _date.getDate() == choosedStartTime.getDate();
+                        if (yearEqual && monthEqual && dateEqual) {
                             numState = 'active';
                             break;
                         } else if (dateType == 3 && choosedDate.length == 2 && +_date > minTime && +_date < maxTime) {
@@ -377,7 +521,6 @@ var jDate = function () {
             this._calendarCurr.innerHTML = current;
             date.setMonth(date.getMonth() - 1);
             var currentPre = this.maps.month[date.getMonth()] + ' ' + date.getFullYear();
-            // console.log(currentPre)
             this._calendarCurrPre.innerHTML = currentPre;
             date.setMonth(date.getMonth() + 2);
             var currentNext = this.maps.month[date.getMonth()] + ' ' + date.getFullYear();
@@ -389,7 +532,9 @@ var jDate = function () {
     }, {
         key: '_updateMonthTable',
         value: function _updateMonthTable() {
+            // console.log(this)
             var dates = this._data.choosed.date;
+            // console.log('_updateMonthTable', dates);
             // console.log(dates);
             var dateType = this._data.config.date.type;
             var doms = this._data.sys.dateDoms;
@@ -407,7 +552,10 @@ var jDate = function () {
                 } else {
                     for (var i in dates) {
                         var data = dates[i];
-                        if (+dom.date == +data) {
+                        var yearEqual = dom.date.getFullYear() == data.getFullYear();
+                        var monthEqual = dom.date.getMonth() == data.getMonth();
+                        var dateEqual = dom.date.getDate() == data.getDate();
+                        if (yearEqual && monthEqual && dateEqual) {
                             dom.dom.className = 'active';
                             break;
                         } else if (dateType == 3 && dates.length == 2 && dom.date > minTime && dom.date < maxTime) {
@@ -424,7 +572,6 @@ var jDate = function () {
     }, {
         key: '_chooseDate',
         value: function _chooseDate(date) {
-            // console.log(date);
             var self = this;
             var dateType = this._data.config.date.type;
             var add = true;
@@ -477,6 +624,11 @@ var jDate = function () {
             this._data.choosed.time = [time];
         }
     }, {
+        key: 'remove',
+        value: function remove() {
+            this.calendar.remove();
+        }
+    }, {
         key: 'set',
         value: function set(time) {}
     }, {
@@ -491,7 +643,17 @@ var jDate = function () {
         }
     }, {
         key: 'setDate',
-        value: function setDate(date) {}
+        value: function setDate(date) {
+            // this._date = date;
+        }
+    }, {
+        key: 'setChoosed',
+        value: function setChoosed(date) {
+            // TODO: what if we set multi date
+            this._data.choosed.date[0] = date;
+            this._data.choosed.time[0] = [date.getHours() + 1, date.getMinutes()];
+            this._freshTarget();
+        }
     }]);
     return jDate;
 }();

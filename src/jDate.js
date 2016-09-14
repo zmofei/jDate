@@ -1,11 +1,10 @@
 class jDate {
     constructor(config, data) {
-
         this.maps = {
             month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         }
 
-        this._date = new Date();
+        this._date = (data && data.current) || new Date();
 
         this._data = {
             config: {
@@ -40,19 +39,17 @@ class jDate {
                 this._data.choosed[i] = data[i]
             }
         }
-
+        // console.log(this._data.choosed)
         // crate dom
         this._initDom();
         // init Event
         this._initEvent();
-
-
     }
 
     _initDom() {
         // create calendar
         var calendar = this.calendar = document.createElement('div');
-        calendar.className = 'jDate-calendar';
+        calendar.className = (this._data.config.target ? 'jDate-calendar-target' : '') + ' jDate-calendar';
 
         // calendar
         if (this._data.config.date.type != 0) {
@@ -64,6 +61,11 @@ class jDate {
             this._initDomTimer();
         }
 
+        // target 
+        if (this._data.config.target) {
+            this._initDomTarget();
+        }
+
         // action button
         var actionDom = document.createElement('div');
         actionDom.className = 'jDate-calendar-action';
@@ -72,9 +74,9 @@ class jDate {
             '<span class="material-ani"><button class="jDate-calendar-ok">ok</button></span>',
         ].join('');
         calendar.appendChild(actionDom);
-
         //
         document.body.appendChild(calendar);
+
     }
 
     _initDomCalendar() {
@@ -170,11 +172,37 @@ class jDate {
         this._timerQuickText = calendarTimeDom.querySelector('.jDate-timer-text');
 
         // init time
-        setTimeout(function() {
+        setTimeout(function () {
             self._updateTime(self._data.choosed.time);
         }, 100);
         //
         calendar.appendChild(calendarTimeDom);
+    }
+
+    _initDomTarget() {
+        var target = this._data.config.target;
+        target.className = 'jDate-target';
+        target.value = this._formatTime();
+    }
+
+    _formatTime() {
+        var date = this._data.choosed.date[0];
+        var time = this._data.choosed.time[0];
+        var retStr = '';
+        // console.log(date);
+        if (date) {
+            var month = date.getMonth() + 1;
+            month = month < 10 ? '0' + month : month;
+            var _date = date.getDate();
+            _date = _date < 10 ? '0' + _date : _date;
+            retStr += date.getFullYear() + '/' + month + '/' + _date;
+        }
+        if (time) {
+            var hour = time[0] < 10 ? '0' + time[0] : time[0];
+            var minute = time[1] < 10 ? '0' + time[1] : time[1];
+            retStr += (retStr == '' ? '' : ' ') + hour + ':' + minute
+        }
+        return retStr;
     }
 
     _initEvent() {
@@ -184,33 +212,36 @@ class jDate {
         if (this._data.config.time.type != 0) {
             this._initEventTimer();
         }
-
+        if (this._data.config.target) {
+            this._initEventTarget();
+        }
+        this._initEventSys();
     }
 
     _initEventCalendar() {
         var self = this;
         var preview = self._calendarPre;
         var next = self._calendarNext;
-        preview.addEventListener('mouseup', function(e) {
+        preview.addEventListener('mouseup', function (e) {
             self.setMonth(self._date.getMonth() - 1);
 
-            setTimeout(function() {
+            setTimeout(function () {
                 self._calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner';
                 self._calendarCurrBoxInnder.style.left = '-400px';
             }, 0)
-            setTimeout(function() {
+            setTimeout(function () {
                 self._calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner animate';
                 self._calendarCurrBoxInnder.style.left = '-200px';
             }, 10)
         });
-        next.addEventListener('mouseup', function(e) {
+        next.addEventListener('mouseup', function (e) {
             self.setMonth(self._date.getMonth() + 1);
 
-            setTimeout(function() {
+            setTimeout(function () {
                 self._calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner';
                 self._calendarCurrBoxInnder.style.left = '0px';
             }, 0)
-            setTimeout(function() {
+            setTimeout(function () {
                 self._calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner animate';
                 self._calendarCurrBoxInnder.style.left = '-200px';
             }, 10)
@@ -222,10 +253,10 @@ class jDate {
         var handle = self._timerHandle;
 
         //
-        self._timerQuickText.addEventListener('click', function(e) {
+        self._timerQuickText.addEventListener('click', function (e) {
             if (e.target.tagName == 'SPAN') {
                 var value = e.target.innerText;
-                var values = value.split(':').map(function(item) {
+                var values = value.split(':').map(function (item) {
                     return parseInt(item);
                 });
                 self._updateTime([
@@ -236,7 +267,7 @@ class jDate {
         //
 
         var input = self._timerTitleInput.querySelector('input');
-        self._timerTitleShow.addEventListener('click', function() {
+        self._timerTitleShow.addEventListener('click', function () {
             self._timerTitleShow.style.display = 'none';
             self._timerTitleInput.style.display = 'block';
             var hour = self._data.choosed.time[0][0];
@@ -247,14 +278,14 @@ class jDate {
             input.focus();
         });
 
-        input.addEventListener('blur', function() {
+        input.addEventListener('blur', function () {
             self._timerTitleShow.style.display = 'block';
             self._timerTitleInput.style.display = 'none';
         });
 
-        input.addEventListener('keyup', function(e) {
+        input.addEventListener('keyup', function (e) {
             var value = this.value;
-            var values = value.split(':').map(function(item) {
+            var values = value.split(':').map(function (item) {
                 return parseInt(item);
             });
 
@@ -285,7 +316,7 @@ class jDate {
         var startDom;
         var tempTime;
 
-        handle.addEventListener('mousedown', function(e) {
+        handle.addEventListener('mousedown', function (e) {
             handle.className = 'jDate-timer-bar-handle active';
             startCursor = {
                 x: e.pageX,
@@ -298,7 +329,7 @@ class jDate {
             canMove = true;
         });
 
-        document.addEventListener('mousemove', function(e) {
+        document.addEventListener('mousemove', function (e) {
             if (!canMove) return false;
             var delta = {
                 x: e.pageX - startCursor.x,
@@ -316,7 +347,7 @@ class jDate {
             self._updateTime([time], true);
         });
 
-        document.addEventListener('mouseup', function(e) {
+        document.addEventListener('mouseup', function (e) {
             if (!canMove) return false;
             handle.className = 'jDate-timer-bar-handle animate';
             self._updateTime([tempTime]);
@@ -325,6 +356,97 @@ class jDate {
         });
 
 
+    }
+
+    _initEventTarget() {
+        var self = this;
+        var target = this._data.config.target;
+        target.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+        });
+        target.addEventListener('click', function (e) {
+            self._show();
+        });
+    }
+
+    _initEventSys() {
+        var self = this;
+        this.calendar.querySelector('.jDate-calendar-cancel').addEventListener('click', function () {
+            self._data.choosed = self._data.sys.lastShowChoosed;
+            self._hide();
+        });
+
+        this.calendar.querySelector('.jDate-calendar-ok').addEventListener('click', function () {
+            self._freshTarget();
+            self._hide();
+        });
+        // console.log('initsys')
+        window.addEventListener('click', function (e) {
+            var target = e.target;
+            var find = false;
+            while (target) {
+                if (target == self.calendar || target == self._data.config.target) {
+                    find = true;
+                    break;
+                }
+                target = target.parentNode;
+            }
+            if (!find) {
+                // console.log(self._data.sys.lastShowChoosed)
+                // self._data.choosed = self._data.sys.lastShowChoosed;
+                self._hide();
+            }
+        });
+    }
+
+    _show() {
+        this._freshCalendar();
+        var calendar = this.calendar;
+        var target = this._data.config.target;
+        target.blur();
+        calendar.style.display = 'block';
+        calendar.style.top = this._getOffset(target).top + target.offsetHeight + 1 + 'px';
+        calendar.style.left = this._getOffset(target).left + 'px';
+        this._data.sys.lastShowChoosed = this._deepCopy(this._data.choosed);
+    }
+
+    _hide() {
+        var calendar = this.calendar;
+        calendar.style.display = 'none';
+    }
+
+    _getOffset(tar) {
+        var _tar = tar;
+        var top = 0;
+        var left = 0;
+        while (_tar) {
+            top += _tar.offsetTop;
+            left += _tar.offsetLeft;
+            _tar = _tar.offsetParent;
+        }
+        return {
+            top: top,
+            left: left
+        }
+    }
+
+    _deepCopy(obj) {
+        var newObj = obj;
+        if (typeof obj == 'object' && !(obj instanceof Date)) {
+            newObj = obj instanceof Array ? [] : {};
+            for (var i in obj) {
+                newObj[i] = this._deepCopy(obj[i]);
+            }
+        }
+        return newObj;
+    }
+
+    _freshTarget() {
+        var target = this._data.config.target;
+        target.value = this._formatTime();
+    }
+    _freshCalendar() {
+        this._updateMonthTable();
     }
 
     // show month table
@@ -382,7 +504,10 @@ class jDate {
                 var numState = '';
                 for (var j in choosedDate) {
                     var choosedStartTime = choosedDate[j];
-                    if (+_date == +choosedStartTime) {
+                    var yearEqual = _date.getFullYear() == choosedStartTime.getFullYear();
+                    var monthEqual = _date.getMonth() == choosedStartTime.getMonth();
+                    var dateEqual = _date.getDate() == choosedStartTime.getDate();
+                    if (yearEqual && monthEqual && dateEqual) {
                         numState = 'active';
                         break;
                     } else if (dateType == 3 && choosedDate.length == 2 && +_date > minTime && +_date < maxTime) {
@@ -412,7 +537,6 @@ class jDate {
         this._calendarCurr.innerHTML = current;
         date.setMonth(date.getMonth() - 1);
         var currentPre = this.maps.month[date.getMonth()] + ' ' + date.getFullYear();
-        // console.log(currentPre)
         this._calendarCurrPre.innerHTML = currentPre;
         date.setMonth(date.getMonth() + 2);
         var currentNext = this.maps.month[date.getMonth()] + ' ' + date.getFullYear();
@@ -421,7 +545,9 @@ class jDate {
 
     //
     _updateMonthTable() {
+        // console.log(this)
         var dates = this._data.choosed.date;
+        // console.log('_updateMonthTable', dates);
         // console.log(dates);
         var dateType = this._data.config.date.type;
         var doms = this._data.sys.dateDoms;
@@ -433,13 +559,16 @@ class jDate {
             maxTime = Math.max(+dates[0], +dates[1]);
         }
 
-        doms.map(function(dom) {
+        doms.map(function (dom) {
             if (dates.length <= 0) {
                 dom.dom.className = '';
             } else {
                 for (var i in dates) {
                     var data = dates[i];
-                    if (+dom.date == +data) {
+                    var yearEqual = dom.date.getFullYear() == data.getFullYear();
+                    var monthEqual = dom.date.getMonth() == data.getMonth();
+                    var dateEqual = dom.date.getDate() == data.getDate();
+                    if (yearEqual && monthEqual && dateEqual) {
                         dom.dom.className = 'active';
                         break;
                     } else if (dateType == 3 && dates.length == 2 && dom.date > minTime && dom.date < maxTime) {
@@ -455,7 +584,6 @@ class jDate {
     }
 
     _chooseDate(date) {
-        // console.log(date);
         var self = this;
         var dateType = this._data.config.date.type;
         var add = true;
@@ -471,7 +599,7 @@ class jDate {
                 // in case 3 , time slot only can choose 2(a start time & a end time);
                 // in case 2 , max is the user config or Infinity;
                 var max = dateType == 3 ? 2 : (this._data.config.date.max || Infinity);
-                this._data.choosed.date = this._data.choosed.date.filter(function(value, index) {
+                this._data.choosed.date = this._data.choosed.date.filter(function (value, index) {
                     if (year == value.year && month == value.month && date == value.date) {
                         add = false;
                         return false;
@@ -508,14 +636,27 @@ class jDate {
 
     }
 
-    set(time) {}
-    setYear(year) {}
+    remove() {
+        this.calendar.remove();
+    }
+
+    set(time) { }
+    setYear(year) { }
     setMonth(month) {
         // month;
         this._date.setMonth(month);
         this._createMonthTable();
     }
-    setDate(date) {}
+    setDate(date) {
+        // this._date = date;
+    }
+
+    setChoosed(date) {
+        // TODO: what if we set multi date
+        this._data.choosed.date[0] = date;
+        this._data.choosed.time[0] = [date.getHours() + 1, date.getMinutes()];
+        this._freshTarget();
+    }
 
 }
 
@@ -542,10 +683,10 @@ class Material {
         dom.appendChild(box);
 
         //
-        setTimeout(function() {
+        setTimeout(function () {
             self.canHide = false;
             self.show();
-            setTimeout(function() {
+            setTimeout(function () {
                 self.canHide = true;
                 if (self.doHide) {
                     self.hide();
@@ -565,7 +706,7 @@ class Material {
         }
         var self = this;
         this.material.className = 'material finished';
-        setTimeout(function() {
+        setTimeout(function () {
             self.materialBox.remove();
         }, 300);
     }
@@ -573,7 +714,7 @@ class Material {
 
 // for animate
 var amimates = [];
-document.addEventListener('mousedown', function(e) {
+document.addEventListener('mousedown', function (e) {
     var dom = e.target;
     while (dom) {
         if (/material-ani/.test(dom.className)) {
@@ -584,7 +725,7 @@ document.addEventListener('mousedown', function(e) {
     }
 });
 
-window.addEventListener('mouseup', function(e) {
+window.addEventListener('mouseup', function (e) {
     for (var i in amimates) {
         amimates[i].hide();
     }
