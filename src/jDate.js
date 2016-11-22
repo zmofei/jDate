@@ -4,7 +4,7 @@ class jDate {
             month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         }
 
-        this._date = (data && data.current) || new Date();
+        this._date = new Date(+((data && data.current) || new Date()));
 
         this._data = {
             config: {
@@ -18,9 +18,13 @@ class jDate {
                 }
             },
             choosed: {
-                date: [new Date(this._date.getFullYear(), this._date.getMonth(), this._date.getDate())],
+                date: [
+                    new Date(this._date.getFullYear(), this._date.getMonth(), this._date.getDate()),
+                    new Date(this._date.getFullYear(), this._date.getMonth(), this._date.getDate())
+                ],
                 time: [
-                    [12, 0]
+                    [0, 0],
+                    [23, 59]
                 ]
             },
             sys: {
@@ -39,7 +43,6 @@ class jDate {
                 this._data.choosed[i] = data[i]
             }
         }
-        // console.log(this._data.choosed)
         // crate dom
         this._initDom();
         // init Event
@@ -133,12 +136,15 @@ class jDate {
             minuteDom.push('<span>' + (i < 10 ? '0' + i : i) + '</span>');
         }
 
+        var type = this._data.config.time.type;
+
         calendarTimeDom.innerHTML = [
+            // time title
             '   <div class="jDate-calendar-timer" style="' + (self._data.config.date.type == 0 ? 'border-top:none' : '') + '">',
-            '       <div class="jDate-timer-title jDate-timer-input">',
+            '       <div class="jDate-timer-title ' + (type === 3 ? 'jDate-timer-title-slot' : '') + ' jDate-timer-input ">',
             '           <input></input>',
             '       </div>',
-            '       <div class="jDate-timer-title jDate-timer-title-show">',
+            '       <div class="jDate-timer-title ' + (type === 3 ? 'jDate-timer-title-slot' : '') + ' jDate-timer-title-show">',
             '           <span class="jDate-timer-hour">',
             '               <span class="jDate-timer-hour-in">' + hoursDom.join('') + '</span>',
             '           </span>',
@@ -147,11 +153,32 @@ class jDate {
             '               <span class="jDate-timer-minute-in">' + minuteDom.join('') + '</span>',
             '           </span>',
             '       </div>',
+            // time title
+            '       <div class="jDate-timer-title ' + (type === 3 ? 'jDate-timer-title-slot' : 'jDate-timer-hide') + ' jDate-timer-input">',
+            '           <input></input>',
+            '       </div>',
+            '       <div class="jDate-timer-title ' + (type === 3 ? 'jDate-timer-title-slot' : 'jDate-timer-hide') + ' jDate-timer-title-show">',
+            '           <span class="jDate-timer-hour">',
+            '               <span class="jDate-timer-hour-in">' + hoursDom.join('') + '</span>',
+            '           </span>',
+            '           <span> : </span>',
+            '           <span class="jDate-timer-minute">',
+            '               <span class="jDate-timer-minute-in">' + minuteDom.join('') + '</span>',
+            '           </span>',
+            '       </div>',
+            //
             '       <div class="jDate-timer-barbox">',
+            // bar-ball
             '           <div class="jDate-timer-bar-handle animate">',
             '	            <div class="jDate-timer-bar-handle-color"></div>',
             '	            <div class="jDate-timer-bar-handle-ani"></div>',
             '           </div>',
+            // bar-ball
+            '           <div class="jDate-timer-bar-handle animate ' + (type === 3 ? 'jDate-timer-bar-handle-slot' : 'jDate-timer-hide') + '">',
+            '	            <div class="jDate-timer-bar-handle-color"></div>',
+            '	            <div class="jDate-timer-bar-handle-ani"></div>',
+            '           </div>',
+            //
             '           <div class="jDate-timer-bar"></div>',
             '           <div class="jDate-timer-text">',
             '               <span style="left: 0;">00:00</span>',
@@ -164,11 +191,22 @@ class jDate {
             '   </div>',
         ].join('');
 
-        this._timerHandle = calendarTimeDom.querySelector('.jDate-timer-bar-handle');
-        this._timerMinute = calendarTimeDom.querySelector('.jDate-timer-minute');
-        this._timerHour = calendarTimeDom.querySelector('.jDate-timer-hour');
-        this._timerTitleShow = calendarTimeDom.querySelector('.jDate-timer-title-show');
-        this._timerTitleInput = calendarTimeDom.querySelector('.jDate-timer-input');
+        var barHandle = calendarTimeDom.querySelectorAll('.jDate-timer-bar-handle');
+        this._timerHandle = barHandle[0];
+        this._timerHandleSlot = barHandle[1];
+        var minute = calendarTimeDom.querySelectorAll('.jDate-timer-minute');
+        this._timerMinute = minute[0];
+        this._timerMinuteSlot = minute[1];
+        var hour = calendarTimeDom.querySelectorAll('.jDate-timer-hour');
+        this._timerHour = hour[0];
+        this._timerHourSlot = hour[1];
+        var titleShow = calendarTimeDom.querySelectorAll('.jDate-timer-title-show');
+        this._timerTitleShow = titleShow[0];
+        this._timerTitleShowSlot = titleShow[1];
+        var timeInput = calendarTimeDom.querySelectorAll('.jDate-timer-input');
+        this._timerTitleInput = timeInput[0];
+        this._timerTitleInputSlot = timeInput[1];
+
         this._timerQuickText = calendarTimeDom.querySelector('.jDate-timer-text');
 
         // init time
@@ -186,21 +224,59 @@ class jDate {
     }
 
     _formatTime() {
-        var date = this._data.choosed.date[0];
-        var time = this._data.choosed.time[0];
+        var date = this._data.choosed.date;
+        var dateType = this._data.config.date.type;
+        var time = this._data.choosed.time;
+        var timeType = this._data.config.time.type;
         var retStr = '';
-        // console.log(date);
-        if (date) {
-            var month = date.getMonth() + 1;
-            month = month < 10 ? '0' + month : month;
-            var _date = date.getDate();
-            _date = _date < 10 ? '0' + _date : _date;
-            retStr += date.getFullYear() + '/' + month + '/' + _date;
+        // date 
+        if (date.length >= 1 && dateType !== 0) {
+            if (dateType === 3) {
+                date.sort(function (a, b) {
+                    return a - b;
+                });
+
+                var _ret = [];
+                date.forEach(function (date) {
+                    var month = date.getMonth() + 1;
+                    month = month < 10 ? '0' + month : month;
+                    var _date = date.getDate();
+                    _date = _date < 10 ? '0' + _date : _date;
+                    _ret.push(date.getFullYear() + '/' + month + '/' + _date);
+                });
+                retStr += _ret.join('-');
+            } else {
+                var month = date[0].getMonth() + 1;
+                month = month < 10 ? '0' + month : month;
+                var _date = date[0].getDate();
+                _date = _date < 10 ? '0' + _date : _date;
+                retStr += date[0].getFullYear() + '/' + month + '/' + _date;
+            }
         }
-        if (time) {
-            var hour = time[0] < 10 ? '0' + time[0] : time[0];
-            var minute = time[1] < 10 ? '0' + time[1] : time[1];
-            retStr += (retStr == '' ? '' : ' ') + hour + ':' + minute
+        // time 
+        if (time.length >= 1 && timeType !== 0) {
+            if (timeType !== 3) {
+                time = time[0];
+                var hour = time[0] < 10 ? '0' + time[0] : time[0];
+                var minute = time[1] < 10 ? '0' + time[1] : time[1];
+                retStr += (retStr == '' ? '' : ' ') + hour + ':' + minute;
+            } else {
+                time = time.sort(function (a, b) {
+                    return (a[0] * 100 + a[1]) - (b[0] * 100 + b[1]);
+                });
+                var theTimeTemp = [];
+                var theTime = time[0];
+                var hour = theTime[0] < 10 ? '0' + theTime[0] : theTime[0];
+                var minute = theTime[1] < 10 ? '0' + theTime[1] : theTime[1];
+                theTimeTemp.push((retStr == '' ? '' : ' ') + hour + ':' + minute);
+
+                theTime = time[1];
+                var hour = theTime[0] < 10 ? '0' + theTime[0] : theTime[0];
+                var minute = theTime[1] < 10 ? '0' + theTime[1] : theTime[1];
+                theTimeTemp.push((retStr == '' ? '' : ' ') + hour + ':' + minute);
+
+                retStr = theTimeTemp.join('-');
+            }
         }
         return retStr;
     }
@@ -235,8 +311,9 @@ class jDate {
             }, 10)
         });
         next.addEventListener('mouseup', function (e) {
+            // console.log('2-2', self._data.choosed.date);
             self.setMonth(self._date.getMonth() + 1);
-
+            // console.log('2-3', self._data.choosed.date);
             setTimeout(function () {
                 self._calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner';
                 self._calendarCurrBoxInnder.style.left = '0px';
@@ -246,13 +323,48 @@ class jDate {
                 self._calendarCurrBoxInnder.style.left = '-200px';
             }, 10)
         });
+
+        var movePos = {
+            cursor: [0, 0],
+            calendar: [0, 0],
+            mousedown: false,
+            canMove: true
+        }
+
+        this.calendar.addEventListener('mousedown', function (e) {
+            movePos.cursor = [e.pageX, e.pageY];
+            movePos.calendar = [parseInt(self.calendar.style.left), parseInt(self.calendar.style.top)];
+            movePos.mousedown = true;
+        });
+
+        window.addEventListener('mousemove', function (e) {
+            if (movePos.mousedown) {
+                var dx = e.pageX - movePos.cursor[0];
+                var dy = e.pageY - movePos.cursor[1];
+                if (movePos.canMove || dx > 10 || dy > 10) {
+                    movePos.canMove = true;
+                    self.calendar.style.cursor = 'move';
+                    e.preventDefault();
+                    e.stopPropagation();
+                    self.calendar.style.left = movePos.calendar[0] + dx + 'px';
+                    self.calendar.style.top = movePos.calendar[1] + dy + 'px';
+                }
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
+        window.addEventListener('mouseup', function () {
+            movePos.mousedown = false;
+            movePos.canMove = false;
+            self.calendar.style.cursor = 'auto';
+        });
     }
 
     _initEventTimer() {
         var self = this;
-        var handle = self._timerHandle;
 
-        //
+        // quick select
         self._timerQuickText.addEventListener('click', function (e) {
             if (e.target.tagName == 'SPAN') {
                 var value = e.target.innerText;
@@ -266,10 +378,11 @@ class jDate {
         });
         //
 
+        // input 
         var input = self._timerTitleInput.querySelector('input');
         self._timerTitleShow.addEventListener('click', function () {
             self._timerTitleShow.style.display = 'none';
-            self._timerTitleInput.style.display = 'block';
+            self._timerTitleInput.style.display = 'inline-block';
             var hour = self._data.choosed.time[0][0];
             hour = hour < 10 ? '0' + hour : hour;
             var minute = self._data.choosed.time[0][1];
@@ -279,7 +392,7 @@ class jDate {
         });
 
         input.addEventListener('blur', function () {
-            self._timerTitleShow.style.display = 'block';
+            self._timerTitleShow.style.display = 'inline-block';
             self._timerTitleInput.style.display = 'none';
         });
 
@@ -311,61 +424,171 @@ class jDate {
             }
         });
 
-        var canMove = false;
-        var startCursor;
-        var startDom;
-        var tempTime;
-
-        handle.addEventListener('mousedown', function (e) {
-            handle.className = 'jDate-timer-bar-handle active';
-            startCursor = {
-                x: e.pageX,
-            }
-
-            var domStyle = getComputedStyle(handle);
-            startDom = {
-                x: parseInt(domStyle.left)
-            }
-            canMove = true;
+        // input slot
+        var inputSlot = self._timerTitleInputSlot.querySelector('input');
+        self._timerTitleShowSlot.addEventListener('click', function () {
+            self._timerTitleShowSlot.style.display = 'none';
+            self._timerTitleInputSlot.style.display = 'inline-block';
+            var hour = self._data.choosed.time[1][0];
+            hour = hour < 10 ? '0' + hour : hour;
+            var minute = self._data.choosed.time[1][1];
+            minute = minute < 10 ? '0' + minute : minute;
+            inputSlot.value = hour + ' : ' + minute;
+            inputSlot.focus();
         });
 
-        document.addEventListener('mousemove', function (e) {
-            if (!canMove) return false;
-            var delta = {
-                x: e.pageX - startCursor.x,
+        inputSlot.addEventListener('blur', function () {
+            self._timerTitleShowSlot.style.display = 'inline-block';
+            self._timerTitleInputSlot.style.display = 'none';
+        });
+
+        inputSlot.addEventListener('keyup', function (e) {
+            // console.log()
+            var theTime = [
+                self._data.choosed.time[0],
+                []
+            ];
+
+            var value = this.value;
+            var values = value.split(':').map(function (item) {
+                return parseInt(item);
+            });
+
+            var hour = values[0] || 0;
+            var minute = values[1] || 0;
+            hour = Math.max(0, hour);
+            hour = Math.min(24, hour);
+            minute = Math.max(0, minute);
+            minute = Math.min(59, minute);
+            if (hour == 24) {
+                minute = 0;
             };
-            var left = startDom.x + delta.x;
-            left = Math.max(0, left);
-            left = Math.min(270, left);
-            handle.style.left = left + 'px';
-            e.preventDefault();
-            e.stopPropagation();
-            var timeMin = parseInt(left / 270 * (24 * 60));
-            var step = self._data.config.time.step || 1;
-            timeMin = Math.round(timeMin / step) * step;
-            var time = tempTime = [parseInt(timeMin / 60), timeMin % 60];
-            self._updateTime([time], true);
+
+            theTime[1] = [hour, minute];
+            self._updateTime(theTime);
+
+            if (e.keyCode == '13') {
+                self._timerTitleShowSlot.style.display = 'block';
+                self._timerTitleInputSlot.style.display = 'none';
+                self._updateTime(theTime);
+            }
         });
 
-        document.addEventListener('mouseup', function (e) {
-            if (!canMove) return false;
-            handle.className = 'jDate-timer-bar-handle animate';
-            self._updateTime([tempTime]);
-            startCursor = startDom = null;
-            canMove = false;
-        });
+        //
+        ;
+        (function () {
+            var handle = self._timerHandle;
+            var canMove = false;
+            var startCursor;
+            var startDom;
+            var tempTime;
 
+            handle.addEventListener('mousedown', function (e) {
+                handle.className = 'jDate-timer-bar-handle active';
+                startCursor = {
+                    x: e.pageX,
+                }
+
+                var domStyle = getComputedStyle(handle);
+                startDom = {
+                    x: parseInt(domStyle.left)
+                }
+                canMove = true;
+            });
+
+            document.addEventListener('mousemove', function (e) {
+                if (!canMove) return false;
+                var delta = {
+                    x: e.pageX - startCursor.x,
+                };
+                var left = startDom.x + delta.x;
+                left = Math.max(0, left);
+                left = Math.min(270, left);
+                handle.style.left = left + 'px';
+                e.preventDefault();
+                e.stopPropagation();
+                var timeMin = parseInt(left / 270 * (24 * 60));
+                var step = self._data.config.time.step || 1;
+                timeMin = Math.round(timeMin / step) * step;
+                var time = tempTime = [parseInt(timeMin / 60), timeMin % 60];
+                self._updateTime([time], true);
+            });
+
+            document.addEventListener('mouseup', function (e) {
+                if (!canMove) return false;
+                handle.className = 'jDate-timer-bar-handle animate';
+                self._updateTime([tempTime]);
+                startCursor = startDom = null;
+                canMove = false;
+            });
+        })();
+
+        //
+        ;
+        (function () {
+            var handle = self._timerHandleSlot;
+            var canMove = false;
+            var startCursor;
+            var startDom;
+            var tempTime;
+
+            handle.addEventListener('mousedown', function (e) {
+                handle.className = 'jDate-timer-bar-handle active';
+                startCursor = {
+                    x: e.pageX,
+                }
+
+                var domStyle = getComputedStyle(handle);
+                startDom = {
+                    x: parseInt(domStyle.left)
+                }
+                canMove = true;
+            });
+
+            document.addEventListener('mousemove', function (e) {
+                if (!canMove) return false;
+                var delta = {
+                    x: e.pageX - startCursor.x,
+                };
+                var left = startDom.x + delta.x;
+                left = Math.max(0, left);
+                left = Math.min(270, left);
+                handle.style.left = left + 'px';
+                e.preventDefault();
+                e.stopPropagation();
+                var timeMin = parseInt(left / 270 * (24 * 60));
+                var step = self._data.config.time.step || 1;
+                timeMin = Math.round(timeMin / step) * step;
+                var time = tempTime = [parseInt(timeMin / 60), timeMin % 60];
+                var theTime = self._data.choosed.time;
+                theTime[1] = time;
+                self._updateTime(theTime, true);
+            });
+
+            document.addEventListener('mouseup', function (e) {
+                if (!canMove) return false;
+                handle.className = 'jDate-timer-bar-handle animate';
+                var theTime = self._data.choosed.time;
+                theTime[1] = tempTime;
+                self._updateTime(theTime);
+                startCursor = startDom = null;
+                canMove = false;
+            });
+        })();
 
     }
 
     _initEventTarget() {
+        // console.log(1)
         var self = this;
         var target = this._data.config.target;
         target.addEventListener('mousedown', function (e) {
-            e.preventDefault();
+            // e.preventDefault();
         });
         target.addEventListener('click', function (e) {
-            self._show();
+            if (self.calendar.style.display !== 'block') {
+                self._show();
+            }
         });
     }
 
@@ -380,8 +603,9 @@ class jDate {
             self._freshTarget();
             self._hide();
         });
+
         // console.log('initsys')
-        window.addEventListener('click', function (e) {
+        this._data.config.target && window.addEventListener('click', function (e) {
             var target = e.target;
             var find = false;
             while (target) {
@@ -392,10 +616,31 @@ class jDate {
                 target = target.parentNode;
             }
             if (!find) {
-                // console.log(self._data.sys.lastShowChoosed)
-                // self._data.choosed = self._data.sys.lastShowChoosed;
                 self._hide();
             }
+        });
+
+        this._data.config.target.addEventListener('keyup', function (e) {
+            if (e.keyCode == 13) {
+                self._hide();
+                this.blur();
+            } else {
+                try {
+                    var date = new Date(this.value);
+                    if (date.getDate() < 40) {
+                        self._data.choosed.date[0] = date;
+                        self._data.choosed.time[0] = [date.getHours(), date.getMinutes()];
+                        self._updateMonthTable();
+                        self._updateTime(self._data.choosed.time);
+                    }
+                } catch (e) {
+
+                }
+            }
+        });
+
+        this._data.config.target.addEventListener('blur', function () {
+            self._freshTarget()
         });
     }
 
@@ -403,10 +648,17 @@ class jDate {
         this._freshCalendar();
         var calendar = this.calendar;
         var target = this._data.config.target;
-        target.blur();
+        // target.blur();
+
         calendar.style.display = 'block';
-        calendar.style.top = this._getOffset(target).top + target.offsetHeight + 1 + 'px';
-        calendar.style.left = this._getOffset(target).left + 'px';
+
+        var top = this._getOffset(target).top + target.offsetHeight;
+        var left = this._getOffset(target).left;
+        left = ((left + calendar.offsetWidth) > document.body.offsetWidth) ? document.body.offsetWidth - calendar.offsetWidth : left;
+        top = ((top + calendar.offsetHeight) > (document.body.clientHeight + document.body.scrollTop)) ? document.body.clientHeight + document.body.scrollTop - calendar.offsetHeight : top;
+
+        calendar.style.top = top + 1 + 'px';
+        calendar.style.left = left + 'px';
         this._data.sys.lastShowChoosed = this._deepCopy(this._data.choosed);
     }
 
@@ -462,7 +714,9 @@ class jDate {
         date.setDate(0);
         var lastDayDate = date.getDate();
         var deltaDay = lastDayDate % 7;
-        var endNum = lastDayDate + (deltaDay == 0 ? 0 : (7 - deltaDay));
+
+        var endNum = lastDayDate + firstDayDay;
+        // console.log(lastDayDate, deltaDay, date)
 
         // crate the table
         var table = document.createElement('table');
@@ -473,6 +727,7 @@ class jDate {
 
         //
         var choosedDate = this._data.choosed.date;
+        // console.log('2', this._data.choosed.date);
 
 
         var dateType = this._data.config.date.type;
@@ -485,6 +740,7 @@ class jDate {
 
 
         var dateDoms = [];
+        // console.log(endNum);
         for (var i = 0; i < endNum; i++) {
             if (i % 7 == 0) {
                 var _tr = document.createElement('tr');
@@ -507,6 +763,7 @@ class jDate {
                     var yearEqual = _date.getFullYear() == choosedStartTime.getFullYear();
                     var monthEqual = _date.getMonth() == choosedStartTime.getMonth();
                     var dateEqual = _date.getDate() == choosedStartTime.getDate();
+
                     if (yearEqual && monthEqual && dateEqual) {
                         numState = 'active';
                         break;
@@ -619,20 +876,44 @@ class jDate {
     }
 
     _updateTime(time, withoutBar) {
-        var time = time[0];
-        // console.log(time)
-        if (!withoutBar) {
-            var totalMin = time[0] * 60 + time[1];
-            var present = totalMin / (24 * 60);
-            this._timerHandle.style.left = present * 100 + '%';
+        var theTime = this._data.choosed.time;
+
+
+        if (time[0]) {
+            var _time = time[0];
+            if (!withoutBar) {
+                var totalMin = _time[0] * 60 + _time[1];
+                var present = totalMin / (24 * 60);
+                this._timerHandle.style.left = present * 100 + '%';
+            }
+            var minute = this._timerMinute.querySelector('.jDate-timer-minute-in');
+            var hour = this._timerHour.querySelector('.jDate-timer-hour-in');
+            hour.style.top = _time[0] * -20 + 'px';
+            minute.style.top = _time[1] * -20 + 'px';
+            theTime[0] = time[0];
         }
 
-        var minute = this._timerMinute.querySelector('.jDate-timer-minute-in');
-        var hour = this._timerHour.querySelector('.jDate-timer-hour-in');
-        hour.style.top = time[0] * -20 + 'px';
-        minute.style.top = time[1] * -20 + 'px';
+        if (time[1]) {
+            var _time = time[1];
+            if (!withoutBar) {
+                var totalMin = _time[0] * 60 + _time[1];
+                var present = totalMin / (24 * 60);
+                this._timerHandleSlot.style.left = present * 100 + '%';
+            }
+            var minute = this._timerMinuteSlot.querySelector('.jDate-timer-minute-in');
+            var hour = this._timerHourSlot.querySelector('.jDate-timer-hour-in');
+            hour.style.top = _time[0] * -20 + 'px';
+            minute.style.top = _time[1] * -20 + 'px';
+            theTime[1] = time[1];
+        }
 
-        this._data.choosed.time = [time]
+        // if (theTime.length === 2) {
+        //     theTime.sort(function (a, b) {
+        //         return (a[0] * 100 + a[1]) - (b[0] * 100 + b[1]);
+        //     });
+        // };
+
+        this._data.choosed.time = theTime;
 
     }
 
@@ -640,10 +921,9 @@ class jDate {
         this.calendar.remove();
     }
 
-    set(time) { }
-    setYear(year) { }
+    set(time) {}
+    setYear(year) {}
     setMonth(month) {
-        // month;
         this._date.setMonth(month);
         this._createMonthTable();
     }
@@ -654,7 +934,7 @@ class jDate {
     setChoosed(date) {
         // TODO: what if we set multi date
         this._data.choosed.date[0] = date;
-        this._data.choosed.time[0] = [date.getHours() + 1, date.getMinutes()];
+        this._data.choosed.time[0] = [date.getHours(), date.getMinutes()];
         this._freshTarget();
     }
 

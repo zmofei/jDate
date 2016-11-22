@@ -314,6 +314,10 @@
     z-index: 10;
 }
 
+.jDate-timer-bar-handle-slot {
+    left: 100%;
+}
+
 .jDate-timer-bar-handle.animate {
     transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
 }
@@ -391,4 +395,22 @@
     border: none;
     background: none;
     border-bottom: 1px solid #ccc;
+}
+
+.jDate-timer-title-slot {
+    width: 49%;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.jDate-timer-title-slot.jDate-timer-input {
+    display: none;
+}
+
+.jDate-timer-title-slot.jDate-timer-input input {
+    width: 110px;
+}
+
+.jDate-timer-hide {
+    display: none;
 }
