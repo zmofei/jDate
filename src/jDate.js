@@ -597,11 +597,14 @@ class jDate {
         this.calendar.querySelector('.jDate-calendar-cancel').addEventListener('click', function () {
             self._data.choosed = self._data.sys.lastShowChoosed;
             self._hide();
+            config.change && config.change();
         });
 
         this.calendar.querySelector('.jDate-calendar-ok').addEventListener('click', function () {
             self._freshTarget();
             self._hide();
+            console.log(config.change)
+            config.change && config.change();
         });
 
         // console.log('initsys')
