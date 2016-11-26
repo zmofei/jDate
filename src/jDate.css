@@ -1,0 +1,416 @@
+.jDate-calendar {
+    font-family: Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+    width: 300px;
+    padding: 5px 10px 10px 10px;
+    box-shadow: 0 8px 9px -5px rgba(0, 0, 0, .2), 0 15px 22px 2px rgba(0, 0, 0, .14), 0 6px 28px 5px rgba(0, 0, 0, .12);
+}
+
+.jDate-target {
+    outline: none;
+    cursor: pointer;
+}
+
+.jDate-calendar-target {
+    display: none;
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left: 0;
+}
+
+.jDate-calendar-table,
+.jDate-calendar-table table {
+    width: 300px;
+    text-align: center;
+    font-size: 13px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.jDate-calendar-table table th {
+    font-size: 14px;
+    font-weight: normal;
+    color: #999;
+    font-family: Roboto, sans-serif;
+}
+
+.jDate-calendar-table table td span {
+    -webkit-backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    border-radius: 100px;
+    cursor: pointer;
+    position: relative;
+}
+
+.jDate-calendar-table table td span:hover {
+    color: #fff;
+}
+
+.jDate-calendar-table table td span div {
+    transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    background: #f44437;
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    left: 50%;
+    top: 50%;
+    border-radius: 100px;
+    opacity: 0;
+    z-index: -1;
+}
+
+.jDate-calendar-table table td span:hover div {
+    width: 28px;
+    height: 28px;
+    margin: -14px;
+    opacity: 0.5;
+}
+
+.jDate-calendar-table table td.active span {
+    font-size: 13px;
+    font-weight: 100;
+    color: rgb(255, 255, 255);
+    background-color: rgb(244, 67, 54);
+    border-radius: 100px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
+}
+
+.jDate-calendar-table table td.during span {
+    font-size: 13px;
+    color: #fff;
+    font-weight: normal;
+}
+
+.jDate-calendar-table table td.during span:hover div {
+    background: #f44437;
+    opacity: 0.8;
+}
+
+.jDate-calendar-table table td.during span div {
+    background: #f44437;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
+    width: 28px;
+    height: 28px;
+    margin: -14px;
+    opacity: 0.5;
+}
+
+.jDate-calendar-title {
+    padding: 0;
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+}
+
+.jDate-calendar-curr-box {
+    overflow: hidden;
+}
+
+.jDate-calendar-curr-box,
+.jDate-calendar-curr,
+.jDate-calendar-curr-pre,
+.jDate-calendar-curr-next {
+    display: inline-block;
+    height: 50px;
+    width: 200px;
+    position: relative;
+}
+
+.jDate-calendar-curr,
+.jDate-calendar-curr-pre,
+.jDate-calendar-curr-next {
+    position: absolute;
+    left: 200px;
+    top: 0;
+}
+
+.jDate-calendar-curr-pre {
+    left: 0;
+}
+
+.jDate-calendar-curr-next {
+    left: 400px;
+}
+
+.jDate-calendar-curr-box-inner {
+    position: absolute;
+    left: -200px;
+    height: 50px;
+    width: 600px;
+}
+
+.jDate-calendar-curr-box-inner.animate {
+    transition: all 0.1s cubic-bezier(.69, 0, .55, 1);
+}
+
+.jDate-calendar-pre,
+.jDate-calendar-next {
+    cursor: pointer;
+    position: relative;
+    color: #666;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    line-height: 50px;
+}
+
+.jDate-calendar-pre {
+    float: left;
+    margin-left: 0px;
+}
+
+.jDate-calendar-next {
+    float: right;
+    margin-right: 0px;
+}
+
+.jDate-calendar-pre svg,
+.jDate-calendar-next svg {
+    display: inline-block;
+    color: rgba(0, 0, 0, 0.870588);
+    fill: currentcolor;
+    height: 24px;
+    width: 24px;
+    margin-top: 13px;
+    -webkit-user-select: none;
+}
+
+.jDate-calendar-action {
+    padding: 10px 15px 5px 0;
+    text-align: right;
+}
+
+.jDate-calendar-cancel,
+.jDate-calendar-ok {
+    cursor: pointer;
+    -webkit-transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    -moz-transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    transition: all 0.18s cubic-bezier(.69, 0, .55, 1);
+    color: #f44437;
+    border: none;
+    background: none;
+    font-size: 16px;
+    /*width: 100px;*/
+    /*margin: 0 10px;*/
+    border-radius: 4px;
+    padding: 8px 20px;
+    outline: none;
+}
+
+.jDate-calendar-cancel:hover,
+.jDate-calendar-ok:hover {
+    background: #f4f4f4;
+}
+
+.material-ani {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.material-box {
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    overflow: hidden;
+    border-radius: 50%;
+    -webkit-user-select: none;
+}
+
+.material {
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    position: absolute;
+    width: 0;
+    height: 0;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10000px;
+    /*z-index: -1;*/
+    -webkit-user-select: none;
+    left: 50%;
+    top: 50%;
+    opacity: 1;
+}
+
+.material.active {
+    width: 100%;
+    height: 100%;
+    margin: -50%;
+    left: 50%;
+    top: 50%;
+    opacity: 0.2;
+}
+
+.material.finished {
+    width: 100%;
+    height: 100%;
+    margin: -50%;
+    left: 50%;
+    top: 50%;
+    opacity: 0;
+}
+
+.jDate-calendar-timer {
+    border-top: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+}
+
+.jDate-timer-title {
+    cursor: pointer;
+    text-align: center;
+    padding: 20px 0 0 0;
+    height: 20px;
+}
+
+.jDate-timer-title span {
+    vertical-align: middle;
+    display: inline-block;
+    height: 20px;
+}
+
+.jDate-timer-hour,
+.jDate-timer-minute {
+    cursor: pointer;
+    position: relative;
+    width: 20px;
+    overflow: hidden;
+}
+
+.jDate-timer-hour-in,
+.jDate-timer-minute-in {
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.jDate-timer-barbox {
+    margin: 15px;
+    position: relative;
+    height: 30px;
+}
+
+.jDate-timer-bar {
+    position: absolute;
+    height: 2px;
+    /*margin-top: -1px;*/
+    background: rgb(189, 189, 189);
+    left: 0;
+    right: 0;
+}
+
+.jDate-timer-bar-handle {
+    cursor: pointer;
+    position: absolute;
+    left: 0%;
+    width: 0px;
+    height: 0px;
+    margin: 0px;
+    z-index: 10;
+}
+
+.jDate-timer-bar-handle-slot {
+    left: 100%;
+}
+
+.jDate-timer-bar-handle.animate {
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+}
+
+.jDate-timer-bar-handle-color {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    margin: -6px;
+    left: 0;
+    top: 0;
+    border-radius: 120px;
+    background: rgb(244, 67, 54);
+    z-index: 10;
+}
+
+.jDate-timer-bar-handle-ani {
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    margin: -0px;
+    left: 0;
+    top: 0;
+    background: rgb(244, 67, 54);
+    opacity: 0;
+    border-radius: 100px;
+}
+
+.jDate-timer-bar-handle.active .jDate-timer-bar-handle-ani,
+.jDate-timer-bar-handle:hover .jDate-timer-bar-handle-ani {
+    width: 24px;
+    height: 24px;
+    margin: -12px;
+    opacity: 0.2;
+}
+
+.jDate-timer-text {
+    font-size: 12px;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 10px;
+    cursor: pointer;
+}
+
+.jDate-timer-text span {
+    position: absolute;
+    top: 5px;
+    color: #999;
+    width: 40px;
+    margin-left: -20px;
+    text-align: center;
+}
+
+.jDate-timer-text span:after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    height: 5px;
+    border-left: 1px solid #ccc;
+    top: -5px;
+}
+
+.jDate-timer-input {
+    display: none;
+}
+
+.jDate-timer-input input {
+    font-family: Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 16px;
+    outline: none;
+    padding: 0 0 5px 0;
+    text-align: center;
+    border: none;
+    background: none;
+    border-bottom: 1px solid #ccc;
+}
+
+.jDate-timer-title-slot {
+    width: 49%;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.jDate-timer-title-slot.jDate-timer-input {
+    display: none;
+}
+
+.jDate-timer-title-slot.jDate-timer-input input {
+    width: 110px;
+}
+
+.jDate-timer-hide {
+    display: none;
+}

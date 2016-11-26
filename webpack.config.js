@@ -13,9 +13,7 @@ module.exports = {
                 'babel-loader',
             ],
             query: {
-                presets: ['es2015', {
-                    "modules": false
-                }]
+                presets: ['es2015']
             }
         }]
     }
