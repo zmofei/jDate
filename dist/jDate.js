@@ -1,8 +1,129 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
 } : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
 };
+
+
+
+
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+
+
+
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -27,6 +148,75 @@ var createClass = function () {
     return Constructor;
   };
 }();
+
+
+
+
+
+
+
+var get = function get(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get(parent, property, receiver);
+    }
+  } else if ("value" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var set$1 = function set$1(object, property, value, receiver) {
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent !== null) {
+      set$1(parent, property, value, receiver);
+    }
+  } else if ("value" in desc && desc.writable) {
+    desc.value = value;
+  } else {
+    var setter = desc.set;
+
+    if (setter !== undefined) {
+      setter.call(receiver, value);
+    }
+  }
+
+  return value;
+};
 
 var jDate = function () {
     function jDate(config, data) {
@@ -377,7 +567,7 @@ var jDate = function () {
                 minute = Math.min(59, minute);
                 if (hour == 24) {
                     minute = 0;
-                };
+                }
                 self._updateTime([[hour, minute]]);
 
                 if (e.keyCode == '13') {
@@ -422,7 +612,7 @@ var jDate = function () {
                 minute = Math.min(59, minute);
                 if (hour == 24) {
                     minute = 0;
-                };
+                }
 
                 theTime[1] = [hour, minute];
                 self._updateTime(theTime);
@@ -435,7 +625,7 @@ var jDate = function () {
             });
 
             //
-            ;
+            
             (function () {
                 var handle = self._timerHandle;
                 var canMove = false;
@@ -484,7 +674,7 @@ var jDate = function () {
             })();
 
             //
-            ;
+            
             (function () {
                 var handle = self._timerHandleSlot;
                 var canMove = false;
@@ -558,11 +748,15 @@ var jDate = function () {
             this.calendar.querySelector('.jDate-calendar-cancel').addEventListener('click', function () {
                 self._data.choosed = self._data.sys.lastShowChoosed;
                 self._hide();
+
+                self._data.config.change && self._data.config.change();
             });
 
             this.calendar.querySelector('.jDate-calendar-ok').addEventListener('click', function () {
                 self._freshTarget();
                 self._hide();
+                // console.log(config.change)
+                self._data.config.change && self._data.config.change();
             });
 
             // console.log('initsys')
@@ -698,6 +892,7 @@ var jDate = function () {
             var choosedDate = this._data.choosed.date;
             // console.log('2', this._data.choosed.date);
 
+
             var dateType = this._data.config.date.type;
             var maxTime = 0;
             var minTime = 0;
@@ -749,7 +944,7 @@ var jDate = function () {
                     });
                 }
                 _tr.appendChild(_td);
-            };
+            }
             this._data.sys.dateDoms = dateDoms;
             this._calendarTable.innerHTML = '';
             this._calendarTable.appendChild(table);

@@ -10,11 +10,7 @@ gulp.task('js', function () {
         .pipe(rollup({
             entry: './src/jDate.js',
             plugins: [
-                babel({
-                    "presets": [
-                        "es2015-rollup"
-                    ]
-                })
+                babel()
             ]
         }))
         .on('error', function () {
