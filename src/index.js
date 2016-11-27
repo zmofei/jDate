@@ -63,11 +63,11 @@ class jDate {
             setTimeout(function () {
                 self.doms.calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner';
                 self.doms.calendarCurrBoxInnder.style.left = '-400px';
-            }, 0)
-            setTimeout(function () {
-                self.doms.calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner animate';
-                self.doms.calendarCurrBoxInnder.style.left = '-200px';
-            }, 10)
+                setTimeout(function () {
+                    self.doms.calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner animate';
+                    self.doms.calendarCurrBoxInnder.style.left = '-200px';
+                }, 10);
+            }, 0);
         });
 
         next.addEventListener('mouseup', function () {
@@ -75,11 +75,11 @@ class jDate {
             setTimeout(function () {
                 self.doms.calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner';
                 self.doms.calendarCurrBoxInnder.style.left = '0px';
-            }, 0)
-            setTimeout(function () {
-                self.doms.calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner animate';
-                self.doms.calendarCurrBoxInnder.style.left = '-200px';
-            }, 10)
+                setTimeout(function () {
+                    self.doms.calendarCurrBoxInnder.className = 'jDate-calendar-curr-box-inner animate';
+                    self.doms.calendarCurrBoxInnder.style.left = '-200px';
+                }, 10)
+            }, 0);
         });
 
         var movePos = {
@@ -125,24 +125,24 @@ class jDate {
         calendarDateDom.className = 'jDate-calendar-date';
 
         calendarDateDom.innerHTML = [
-            '   <div class="jDate-calendar-title">',
-            '       <span class="jDate-calendar-pre material-ani">',
-            '           <div class="material"></div>',
-            '           <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>',
-            '       </span>',
-            '       <span class="jDate-calendar-curr-box">',
-            '           <span class="jDate-calendar-curr-box-inner">',
-            '              <span class="jDate-calendar-curr-pre"></span>',
-            '              <span class="jDate-calendar-curr"></span>',
-            '              <span class="jDate-calendar-curr-next"></span>',
-            '           </span>',
-            '       </span>',
-            '       <span class="jDate-calendar-next material-ani">',
-            '           <div class="material"></div>',
-            '           <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>',
-            '       </span>',
-            '   </div>',
-            '   <div class="jDate-calendar-table"></div>',
+            '<div class="jDate-calendar-title">',
+            '    <span class="jDate-calendar-pre material-ani">',
+            '        <div class="material"></div>',
+            '        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>',
+            '    </span>',
+            '    <span class="jDate-calendar-curr-box">',
+            '        <span class="jDate-calendar-curr-box-inner">',
+            '           <span class="jDate-calendar-curr-pre"></span>',
+            '           <span class="jDate-calendar-curr"></span>',
+            '           <span class="jDate-calendar-curr-next"></span>',
+            '        </span>',
+            '    </span>',
+            '    <span class="jDate-calendar-next material-ani">',
+            '        <div class="material"></div>',
+            '        <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>',
+            '    </span>',
+            '</div>',
+            '<div class="jDate-calendar-table"></div>',
         ].join('');
 
         this.doms.calendarTable = calendarDateDom.querySelector('.jDate-calendar-table');
