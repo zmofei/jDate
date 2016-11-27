@@ -270,8 +270,9 @@ var jDate = function () {
             }
         };
 
+        var toadyDate = _tools2.default.getDate(new Date());
         this.datas = {
-            date: [new Date()],
+            date: [new Date(toadyDate[0], toadyDate[1], toadyDate[2])],
             time: []
         };
 
@@ -407,19 +408,6 @@ var jDate = function () {
                         });
                     }
 
-                    // for (var j in choosedDate) {
-                    //     var choosedStartTime = choosedDate[j];
-                    //     var yearEqual = _date.getFullYear() == choosedStartTime.getFullYear();
-                    //     var monthEqual = _date.getMonth() == choosedStartTime.getMonth();
-                    //     var dateEqual = _date.getDate() == choosedStartTime.getDate();
-
-                    //     if (yearEqual && monthEqual && dateEqual) {
-                    // numState = 'active';
-                    //         break;
-                    //     } else if (dateType == 3 && choosedDate.length == 2 && +_date > minTime && +_date < maxTime) {
-                    // numState = 'during';
-                    //     }
-                    // }
                     //
                     _td.className = numState;
                     _td.innerHTML = ['<span>', '<div></div>', dateNum, '</span>'].join('');
@@ -538,17 +526,30 @@ var jDate = function () {
     }, {
         key: 'chooseDate',
         value: function chooseDate(date) {
-            switch (this.config.date.type) {
-                case jDate.Multi:
-                    this.datas.date.push(date);
-                    break;
-                case jDate.Period:
-                    this.datas.date.push(date);
-                    this.datas.date = this.datas.date.slice(-2);
-                    break;
-                default:
-                    this.datas.date = [date];
-                    break;
+            var fitIndex = null;
+            var isFit = this.datas.date.some(function (theDate, index) {
+                if (+theDate === +date) {
+                    fitIndex = index;
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            if (isFit) {
+                this.datas.date.splice(fitIndex, 1);
+            } else {
+                switch (this.config.date.type) {
+                    case jDate.Multi:
+                        this.datas.date.push(date);
+                        break;
+                    case jDate.Period:
+                        this.datas.date.push(date);
+                        this.datas.date = this.datas.date.slice(-2);
+                        break;
+                    default:
+                        this.datas.date = [date];
+                        break;
+                }
             }
 
             this.createMonthTable();
