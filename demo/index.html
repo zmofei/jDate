@@ -7,25 +7,42 @@
 </head>
 
 <body>
-    <div>
+    <div style="margin-bottom: 400px;">
         <input id="date" placeholder="Click ChooseDate" />
     </div>
-    <div style="margin-top: 300px;">
+    <div style="margin-bottom: 400px;">
         <input id="date2" placeholder="Click ChooseDate" />
     </div>
-    <div style="margin-top: 300px;">
+    <div style="margin-bottom: 400px;">
         <input id="date3" placeholder="Click ChooseDate" />
+    </div>
+    <div style="margin-bottom: 400px;">
+        <input id="date4" placeholder="Click ChooseDate" />
+    </div>
+    <div style="margin-bottom: 400px;">
+        <input id="date5" placeholder="Click ChooseDate" />
     </div>
     <script>
         new jDate('date');
+
         new jDate('date2',{
             date: {
                 type: jDate.Multi
             }
         });
+
         new jDate('date3',{
             date: {
                 type: jDate.Period
+            }
+        });
+
+        new jDate('date4',{
+            date: {
+                type: jDate.Period
+            },
+            time: {
+                type: jDate.Single
             }
         });
     </script>

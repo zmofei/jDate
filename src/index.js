@@ -27,9 +27,11 @@ class jDate {
         }
 
         var toadyDate = Tools.getDate(new Date());
+        var todayTime = Tools.getTime(new Date());
+        // TODO: if use time as the value, time could change follow the real time.
         this.datas = {
             date: [new Date(toadyDate[0], toadyDate[1], toadyDate[2])],
-            time: []
+            time: [new Date(toadyDate[0], toadyDate[1], toadyDate[2], todayTime[0], todayTime[1])]
         }
 
         this.initDom();
@@ -49,7 +51,7 @@ class jDate {
         this.initDomCalendar();
 
         // // timer
-        // this._initDomTimer();
+        this.initDomTimer();
 
         // // target 
         // this._initDomTarget();
@@ -102,6 +104,68 @@ class jDate {
         calendar.appendChild(calendarDateDom);
         // show month
         this.createMonthTable();
+    }
+
+    initDomTimer() {
+        var self = this;
+        var calendar = this.calendar;
+        var calendarTimeDom = document.createElement('div');
+        calendarTimeDom.className = 'jDate-calendar-date';
+
+        var hoursDom = [];
+        var minuteDom = [];
+        for (let i = 0; i <= 24; i++) {
+            hoursDom.push('<span>' + (i < 10 ? '0' + i : i) + '</span>');
+        }
+
+        for (let i = 0; i <= 60; i++) {
+            minuteDom.push('<span>' + (i < 10 ? '0' + i : i) + '</span>');
+        }
+
+        var type = 1;
+
+        calendarTimeDom.innerHTML = [
+            '<div class="jDate-calendar-timer">',
+            '    <div class="jDate-timer-title ' + (type === 3 ? 'jDate-timer-title-slot' : '') + ' jDate-timer-input ">',
+            '        <input></input>',
+            '    </div>',
+            '    <div class="jDate-timer-title ' + (type === 3 ? 'jDate-timer-title-slot' : '') + ' jDate-timer-title-show">',
+            '        <span class="jDate-timer-hour">',
+            '            <span class="jDate-timer-hour-in">' + hoursDom.join('') + '</span>',
+            '        </span>',
+            '        <span> : </span>',
+            '        <span class="jDate-timer-minute">',
+            '            <span class="jDate-timer-minute-in">' + minuteDom.join('') + '</span>',
+            '        </span>',
+            '    </div>',
+            '    <div class="jDate-timer-barbox">',
+            '        <div class="jDate-timer-bar-handle animate">',
+            '            <div class="jDate-timer-bar-handle-color"></div>',
+            '            <div class="jDate-timer-bar-handle-ani"></div>',
+            '        </div>',
+            '        <div class="jDate-timer-bar"></div>',
+            '        <div class="jDate-timer-text">',
+            '            <span style="left: 0;">00:00</span>',
+            '            <span style="left: 25%;">06:00</span>',
+            '            <span style="left: 50%;">12:00</span>',
+            '            <span style="left: 75%;">18:00</span>',
+            '            <span style="left: 100%;">24:00</span>',
+            '        </div>',
+            '    </div>',
+            '</div>'
+        ].join('');
+
+        //
+        this.doms.timerHandle = calendarTimeDom.querySelectorAll('.jDate-timer-bar-handle')[0];
+        this.doms.timerMinute = calendarTimeDom.querySelectorAll('.jDate-timer-minute')[0];
+        this.doms.timerHouer = calendarTimeDom.querySelectorAll('.jDate-timer-hour')[0];
+
+        // init time
+        setTimeout(function () {
+            self.updateTime(self.datas.time);
+        }, 100);
+        //
+        calendar.appendChild(calendarTimeDom);
     }
 
     createMonthTable() {
@@ -324,6 +388,24 @@ class jDate {
         }
 
         this.createMonthTable();
+    }
+
+    updateTime(time) {
+        var theTime = this.datas.time;
+        if (time[0]) {
+            var _time = time[0];
+            //
+            var totalMin = _time.getHours() * 60 + _time.getMinutes();
+            var present = totalMin / (24 * 60);
+            this.doms.timerHandle.style.left = present * 100 + '%';
+            //
+            var minute = this.doms.timerMinute.querySelector('.jDate-timer-minute-in');
+            var hour = this.doms.timerHouer.querySelector('.jDate-timer-hour-in');
+            hour.style.top = _time.getHours() * -20 + 'px';
+            minute.style.top = _time.getMinutes() * -20 + 'px';
+            theTime[0] = time[0];
+        }
+        this.datas.time = theTime;
     }
 }
 
