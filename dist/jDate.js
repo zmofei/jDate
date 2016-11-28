@@ -508,8 +508,6 @@ var jDate = function () {
                 this.initEventTimer();
             }
 
-            // this._initEventTarget();
-
             this.initEventSys();
         }
     }, {
@@ -687,6 +685,8 @@ var jDate = function () {
     }, {
         key: 'initEventSys',
         value: function initEventSys() {
+            var _this = this;
+
             var self = this;
 
             // drag the calendar box
@@ -725,6 +725,67 @@ var jDate = function () {
                 movePos.mousedown = false;
                 movePos.canMove = false;
                 self.calendar.style.cursor = 'auto';
+            });
+
+            // cancel and ok button
+            var btns = this.calendar.querySelectorAll('.jDate-calendar-action button');
+            btns[0].addEventListener('click', function () {
+                _this.calendar.style.display = 'none';
+            });
+            btns[1].addEventListener('click', function () {
+                var timeStr = '';
+                var datas = _this.datas.date || [];
+                switch (_this.config.date.type) {
+                    case jDate.Single:
+                        timeStr += _tools2.default.getDate(datas[0]).join('/');
+                        break;
+                    case jDate.Multi:
+                        timeStr += _tools2.default.getDate(datas[0]).join('/') + ' (' + datas.length + ')';
+                        break;
+                    case jDate.Period:
+                        if (datas.length >= 2) {
+                            timeStr += _tools2.default.getDate(datas[0]).join('/');
+                            timeStr += ' - ';
+                            timeStr += _tools2.default.getDate(datas[datas.length - 1]).join('/');
+                        } else {
+                            timeStr += _tools2.default.getDate(datas[0]).join('/');
+                        }
+                        break;
+                    default:
+                }
+
+                var times = _this.datas.time || [];
+                timeStr += timeStr === '' ? '' : ' ';
+                switch (_this.config.time.type) {
+                    case jDate.Single:
+                        timeStr += _tools2.default.getTime(times[0]).join(':');
+                        break;
+                    case jDate.Multi:
+                        timeStr += _tools2.default.getTime(times[0]).join(':') + ' (' + times.length + ')';
+                        break;
+                    case jDate.Period:
+                        if (times.length >= 2) {
+                            timeStr += _tools2.default.getTime(times[0]).join(':');
+                            timeStr += ' - ';
+                            timeStr += _tools2.default.getTime(times[times.length - 1]).join(':');
+                        } else {
+                            timeStr += _tools2.default.getTime(times[0]).join(':');
+                        }
+                        break;
+                    default:
+                }
+
+                var target = _this.doms.target;
+                if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                    target.value = timeStr;
+                } else {
+                    target.innerText = timeStr;
+                }
+                _this.calendar.style.display = 'none';
+            });
+
+            this.doms.target.addEventListener('click', function () {
+                _this.calendar.style.display = 'block';
             });
         }
     }, {
@@ -767,17 +828,17 @@ var jDate = function () {
     }, {
         key: 'updateTime',
         value: function updateTime(times) {
-            var _this = this;
+            var _this2 = this;
 
             var type = this.config.time.type;
             var theTime = this.datas.time;
             times.forEach(function (time, index) {
                 var totalMin = time.getHours() * 60 + time.getMinutes();
                 var present = totalMin / (24 * 60);
-                _this.doms.timerHandles[index].style.left = present * 100 + '%';
+                _this2.doms.timerHandles[index].style.left = present * 100 + '%';
 
-                var minute = _this.doms.timerMinutes[index].querySelector('.jDate-timer-minute-in');
-                var hour = _this.doms.timerHouers[index].querySelector('.jDate-timer-hour-in');
+                var minute = _this2.doms.timerMinutes[index].querySelector('.jDate-timer-minute-in');
+                var hour = _this2.doms.timerHouers[index].querySelector('.jDate-timer-hour-in');
                 hour.style.top = time.getHours() * -20 + 'px';
                 minute.style.top = time.getMinutes() * -20 + 'px';
                 theTime[index] = time;
@@ -785,11 +846,11 @@ var jDate = function () {
                 if (type === jDate.Period) {
                     // this.doms.timerLine
                     if (index === 0) {
-                        _this.doms.timerLine.style.left = present * 100 + '%';
+                        _this2.doms.timerLine.style.left = present * 100 + '%';
                     }
 
                     if (index === 1) {
-                        _this.doms.timerLine.style.right = (1 - present) * 100 + '%';
+                        _this2.doms.timerLine.style.right = (1 - present) * 100 + '%';
                     }
                 }
             });

@@ -318,8 +318,6 @@ class jDate {
             this.initEventTimer();
         }
 
-        // this._initEventTarget();
-
         this.initEventSys();
     }
 
@@ -539,6 +537,68 @@ class jDate {
             movePos.canMove = false;
             self.calendar.style.cursor = 'auto';
         });
+
+        // cancel and ok button
+        let btns = this.calendar.querySelectorAll('.jDate-calendar-action button');
+        btns[0].addEventListener('click', () => {
+            this.calendar.style.display = 'none';
+        });
+        btns[1].addEventListener('click', () => {
+            var timeStr = '';
+            var datas = this.datas.date || [];
+            switch (this.config.date.type) {
+                case jDate.Single:
+                    timeStr += Tools.getDate(datas[0]).join('/');
+                    break;
+                case jDate.Multi:
+                    timeStr += Tools.getDate(datas[0]).join('/') + ' (' + datas.length + ')';
+                    break;
+                case jDate.Period:
+                    if (datas.length >= 2) {
+                        timeStr += Tools.getDate(datas[0]).join('/');
+                        timeStr += ' - ';
+                        timeStr += Tools.getDate(datas[datas.length - 1]).join('/');
+                    } else {
+                        timeStr += Tools.getDate(datas[0]).join('/');
+                    }
+                    break;
+                default:
+            }
+
+            var times = this.datas.time || [];
+            timeStr += timeStr === '' ? '' : ' ';
+            switch (this.config.time.type) {
+                case jDate.Single:
+                    timeStr += Tools.getTime(times[0]).join(':');
+                    break;
+                case jDate.Multi:
+                    timeStr += Tools.getTime(times[0]).join(':') + ' (' + times.length + ')';
+                    break;
+                case jDate.Period:
+                    if (times.length >= 2) {
+                        timeStr += Tools.getTime(times[0]).join(':');
+                        timeStr += ' - ';
+                        timeStr += Tools.getTime(times[times.length - 1]).join(':');
+                    } else {
+                        timeStr += Tools.getTime(times[0]).join(':');
+                    }
+                    break;
+                default:
+            }
+
+
+            var target = this.doms.target;
+            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                target.value = timeStr;
+            } else {
+                target.innerText = timeStr;
+            }
+            this.calendar.style.display = 'none';
+        });
+
+        this.doms.target.addEventListener('click', () => {
+            this.calendar.style.display = 'block';
+        })
     }
 
     setMonth(month) {
