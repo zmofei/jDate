@@ -305,7 +305,7 @@ var jDate = function () {
                 this.initDomTimer();
             }
 
-            // // target 
+            // target 
             // this._initDomTarget();
 
 
@@ -510,7 +510,7 @@ var jDate = function () {
 
             // this._initEventTarget();
 
-            // this._initEventSys();
+            this.initEventSys();
         }
     }, {
         key: 'initEventCalendar',
@@ -541,44 +541,6 @@ var jDate = function () {
                         self.doms.calendarCurrBoxInnder.style.left = '-200px';
                     }, 10);
                 }, 0);
-            });
-
-            // drag the calendar box
-            var movePos = {
-                cursor: [0, 0],
-                calendar: [0, 0],
-                mousedown: false,
-                canMove: true
-            };
-
-            this.calendar.addEventListener('mousedown', function (e) {
-                movePos.cursor = [e.pageX, e.pageY];
-                var pos = getComputedStyle(self.calendar);
-                movePos.calendar = [parseInt(pos.left) || 0, parseInt(pos.top) || 0];
-                movePos.mousedown = true;
-            });
-
-            window.addEventListener('mousemove', function (e) {
-                if (movePos.mousedown) {
-                    var dx = e.pageX - movePos.cursor[0];
-                    var dy = e.pageY - movePos.cursor[1];
-                    if (movePos.canMove || dx > 10 || dy > 10) {
-                        movePos.canMove = true;
-                        self.calendar.style.cursor = 'move';
-                        e.preventDefault();
-                        e.stopPropagation();
-                        self.calendar.style.left = movePos.calendar[0] + dx + 'px';
-                        self.calendar.style.top = movePos.calendar[1] + dy + 'px';
-                    }
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-
-            window.addEventListener('mouseup', function () {
-                movePos.mousedown = false;
-                movePos.canMove = false;
-                self.calendar.style.cursor = 'auto';
             });
         }
     }, {
@@ -720,6 +682,49 @@ var jDate = function () {
                     startCursor = startDom = null;
                     canMove = false;
                 });
+            });
+        }
+    }, {
+        key: 'initEventSys',
+        value: function initEventSys() {
+            var self = this;
+
+            // drag the calendar box
+            var movePos = {
+                cursor: [0, 0],
+                calendar: [0, 0],
+                mousedown: false,
+                canMove: true
+            };
+
+            this.calendar.addEventListener('mousedown', function (e) {
+                movePos.cursor = [e.pageX, e.pageY];
+                var pos = getComputedStyle(self.calendar);
+                movePos.calendar = [parseInt(pos.left) || 0, parseInt(pos.top) || 0];
+                movePos.mousedown = true;
+            });
+
+            window.addEventListener('mousemove', function (e) {
+                if (movePos.mousedown) {
+                    var dx = e.pageX - movePos.cursor[0];
+                    var dy = e.pageY - movePos.cursor[1];
+                    if (movePos.canMove || dx > 10 || dy > 10) {
+                        movePos.canMove = true;
+                        self.calendar.style.cursor = 'move';
+                        e.preventDefault();
+                        e.stopPropagation();
+                        self.calendar.style.left = movePos.calendar[0] + dx + 'px';
+                        self.calendar.style.top = movePos.calendar[1] + dy + 'px';
+                    }
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+
+            window.addEventListener('mouseup', function () {
+                movePos.mousedown = false;
+                movePos.canMove = false;
+                self.calendar.style.cursor = 'auto';
             });
         }
     }, {
