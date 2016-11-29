@@ -253,6 +253,8 @@ var jDate = function () {
 
         _classCallCheck(this, jDate);
 
+        var target = document.querySelector('#' + id);
+
         this.maps = {
             month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             week: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
@@ -260,7 +262,7 @@ var jDate = function () {
 
         this.date = new Date();
         this.doms = {
-            target: document.querySelector('#' + id)
+            target: target
         };
 
         this.config = {
@@ -289,6 +291,7 @@ var jDate = function () {
         value: function initDom() {
             // create calendar
             var calendar = this.calendar = document.createElement('div');
+            calendar.style.display = 'none';
             calendar.className = 'jDate-calendar';
             var tarOffset = _tools2.default.getOffset(this.doms.target);
             var tarHeight = this.doms.target.offsetHeight;
@@ -304,10 +307,6 @@ var jDate = function () {
             if (this.config.time.type !== jDate.Null) {
                 this.initDomTimer();
             }
-
-            // target 
-            // this._initDomTarget();
-
 
             // action button
             var actionDom = document.createElement('div');
@@ -755,7 +754,7 @@ var jDate = function () {
                 }
 
                 var times = _this.datas.time || [];
-                timeStr += timeStr === '' ? '' : ' ';
+                timeStr += timeStr === '' ? '' : _this.config.time.type === jDate.Null ? '' : ' ';
                 switch (_this.config.time.type) {
                     case jDate.Single:
                         timeStr += _tools2.default.getTime(times[0]).join(':');

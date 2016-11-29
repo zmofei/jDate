@@ -1,0 +1,55 @@
+@font-face {
+    font-family: 'h5u';
+    src: url("../fonts/h5u.eot");
+    src: url("../fonts/h5u.eot?#iefix") format("embedded-opentype"), url("../fonts/h5u.woff") format("woff"), url("../fonts/h5u.ttf") format("truetype"), url("../fonts/h5u.svg#h5u") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'h5u', 'Source Sans Pro', sans-serif;
+    font-weight: 200;
+}
+
+.body {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.title {
+    text-align: center;
+}
+
+h1 {
+    background: #e7746f;
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    border-radius: 4px;
+}
+
+h2 {
+    color: rgb(103, 109, 121);
+    letter-spacing: -1.5px;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+h2 strong {
+    font-weight: bold;
+    color: rgb(103, 109, 121);
+    font-size: 32px;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+input {
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    color: #999;
+    width: 250px;
+    font-size: 14px;
+    border-radius: 4px;
+}

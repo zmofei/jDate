@@ -7,6 +7,8 @@ import Tools from './tools';
 
 class jDate {
     constructor(id, config = {}) {
+        const target = document.querySelector('#' + id);
+
         this.maps = {
             month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             week: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
@@ -14,7 +16,7 @@ class jDate {
 
         this.date = new Date();
         this.doms = {
-            target: document.querySelector('#' + id)
+            target
         };
 
         this.config = {
@@ -41,6 +43,7 @@ class jDate {
     initDom() {
         // create calendar
         var calendar = this.calendar = document.createElement('div');
+        calendar.style.display = 'none';
         calendar.className = 'jDate-calendar';
         var tarOffset = Tools.getOffset(this.doms.target);
         var tarHeight = this.doms.target.offsetHeight;
@@ -56,10 +59,6 @@ class jDate {
         if (this.config.time.type !== jDate.Null) {
             this.initDomTimer();
         }
-
-        // target 
-        // this._initDomTarget();
-
 
         // action button
         var actionDom = document.createElement('div');
@@ -566,7 +565,7 @@ class jDate {
             }
 
             var times = this.datas.time || [];
-            timeStr += timeStr === '' ? '' : ' ';
+            timeStr += timeStr === '' ? '' : this.config.time.type === jDate.Null ? '' : ' ';
             switch (this.config.time.type) {
                 case jDate.Single:
                     timeStr += Tools.getTime(times[0]).join(':');
