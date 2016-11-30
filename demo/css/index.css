@@ -15,7 +15,7 @@ body {
 }
 
 .body {
-    width: 1200px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -52,4 +52,17 @@ input {
     width: 250px;
     font-size: 14px;
     border-radius: 4px;
+}
+
+.block {
+    margin: 0 20px;
+    box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
+}
+
+.block-title {
+    background: rgb(232, 232, 232);
+    padding: 10px;
+    height: 25px;
+    line-height: 25px;
+    font-size: 20px;
 }

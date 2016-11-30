@@ -28,10 +28,14 @@ class jDate {
         for (var i in config) {
             this.config[i] = config[i];
         }
-        this.config.date = this.config.date || {};
-        this.config.date.type = this.config.date.type || ((config.date || config.time) ? (config.date && config.date.type) || jDate.Null : jDate.Single);
-        this.config.time.type = this.config.time.type || ((config.date || config.time) ? (config.date && config.date.type) || jDate.Null : jDate.Single);
-        this.config.time.step = this.config.time.step || 1;
+
+        this.config.date = {
+            type: (config.date || config.time) ? (config.date && config.date.type) || jDate.Null : jDate.Single
+        };
+        this.config.time = {
+            type: (config.date || config.time) ? (config.time && config.time.type) || jDate.Null : jDate.Single,
+            step: 1
+        };
 
         var toadyDate = Tools.getDate(new Date());
         var todayTime = Tools.getTime(new Date());
