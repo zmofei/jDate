@@ -247,6 +247,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/**
+ * jDate(tar,config)
+ */
 var jDate = function () {
     function jDate(id) {
         var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -265,15 +268,15 @@ var jDate = function () {
             target: target
         };
 
-        this.config = {
-            date: {
-                type: config.date || config.time ? config.date && config.date.type || jDate.Null : jDate.Single
-            },
-            time: {
-                type: config.time && config.time.type || jDate.Null,
-                step: 1
-            }
-        };
+        // set default config
+        this.config = {};
+        for (var i in config) {
+            this.config[i] = config[i];
+        }
+        this.config.date = this.config.date || {};
+        this.config.date.type = this.config.date.type || (config.date || config.time ? config.date && config.date.type || jDate.Null : jDate.Single);
+        this.config.time.type = this.config.time.type || (config.date || config.time ? config.date && config.date.type || jDate.Null : jDate.Single);
+        this.config.time.step = this.config.time.step || 1;
 
         var toadyDate = _tools2.default.getDate(new Date());
         var todayTime = _tools2.default.getTime(new Date());

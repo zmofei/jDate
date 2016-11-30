@@ -5,6 +5,10 @@
 
 import Tools from './tools';
 
+
+/**
+ * jDate(tar,config)
+ */
 class jDate {
     constructor(id, config = {}) {
         const target = document.querySelector('#' + id);
@@ -19,15 +23,15 @@ class jDate {
             target
         };
 
-        this.config = {
-            date: {
-                type: (config.date || config.time) ? (config.date && config.date.type) || jDate.Null : jDate.Single
-            },
-            time: {
-                type: (config.time && config.time.type) || jDate.Null,
-                step: 1
-            }
+        // set default config
+        this.config = {};
+        for (var i in config) {
+            this.config[i] = config[i];
         }
+        this.config.date = this.config.date || {};
+        this.config.date.type = this.config.date.type || ((config.date || config.time) ? (config.date && config.date.type) || jDate.Null : jDate.Single);
+        this.config.time.type = this.config.time.type || ((config.date || config.time) ? (config.date && config.date.type) || jDate.Null : jDate.Single);
+        this.config.time.step = this.config.time.step || 1;
 
         var toadyDate = Tools.getDate(new Date());
         var todayTime = Tools.getTime(new Date());
