@@ -291,7 +291,7 @@
 	                    //
 	                    _td.className = numState;
 	                    _td.innerHTML = ['<span>', '<div></div>', dateNum, '</span>'].join('');
-	                    _td.addEventListener('click', this.chooseDate.bind(self, _date));
+	                    _td.addEventListener('click', this.chooseDate.bind(this, _date));
 
 	                    //
 	                    dateDoms.push({
@@ -444,15 +444,6 @@
 	                });
 
 	                document.addEventListener('mousemove', function (e) {
-	                    // var max = 270;
-	                    // var min = 0;
-	                    // if (index === 0 && self.doms.timerHandles[1]) {
-	                    //     max = parseInt(getComputedStyle(self.doms.timerHandles[1]).left);
-	                    // }
-	                    // if (index === 1 && self.doms.timerHandles[0]) {
-	                    //     min = parseInt(getComputedStyle(self.doms.timerHandles[0]).left);
-	                    // }
-
 	                    if (!canMove) return false;
 	                    var delta = {
 	                        x: e.pageX - startCursor.x
@@ -547,6 +538,21 @@
 	                self.calendar.style.cursor = 'auto';
 	            });
 
+	            window.addEventListener('click', function (e) {
+	                var dom = e.target;
+	                var isFit = false;
+	                while (dom) {
+	                    if (dom === _this.doms.target || dom === _this.calendar) {
+	                        isFit = true;
+	                        break;
+	                    }
+	                    dom = dom.parentElement;
+	                }
+	                if (!isFit) {
+	                    _this.calendar.style.display = 'none';
+	                }
+	            });
+
 	            // cancel and ok button
 	            var btns = this.calendar.querySelectorAll('.jDate-calendar-action button');
 	            btns[0].addEventListener('click', function () {
@@ -605,7 +611,13 @@
 	            });
 
 	            this.doms.target.addEventListener('click', function () {
-	                _this.calendar.style.display = 'block';
+	                if (_this.calendar.style.display === 'none') {
+	                    var tarOffset = _tools2.default.getOffset(_this.doms.target);
+	                    var tarHeight = _this.doms.target.offsetHeight;
+	                    _this.calendar.style.top = tarOffset.top + tarHeight + 'px';
+	                    _this.calendar.style.left = tarOffset.left + 'px';
+	                    _this.calendar.style.display = 'block';
+	                }
 	            });
 	        }
 	    }, {
@@ -617,6 +629,8 @@
 	    }, {
 	        key: 'chooseDate',
 	        value: function chooseDate(date) {
+	            var _this2 = this;
+
 	            var fitIndex = null;
 	            var isFit = this.datas.date.some(function (theDate, index) {
 	                if (+theDate === +date) {
@@ -643,22 +657,24 @@
 	                }
 	            }
 
-	            this.createMonthTable();
+	            setTimeout(function () {
+	                _this2.createMonthTable();
+	            });
 	        }
 	    }, {
 	        key: 'updateTime',
 	        value: function updateTime(times) {
-	            var _this2 = this;
+	            var _this3 = this;
 
 	            var type = this.config.time.type;
 	            var theTime = this.datas.time;
 	            times.forEach(function (time, index) {
 	                var totalMin = time.getHours() * 60 + time.getMinutes();
 	                var present = totalMin / (24 * 60);
-	                _this2.doms.timerHandles[index].style.left = present * 100 + '%';
+	                _this3.doms.timerHandles[index].style.left = present * 100 + '%';
 
-	                var minute = _this2.doms.timerMinutes[index].querySelector('.jDate-timer-minute-in');
-	                var hour = _this2.doms.timerHouers[index].querySelector('.jDate-timer-hour-in');
+	                var minute = _this3.doms.timerMinutes[index].querySelector('.jDate-timer-minute-in');
+	                var hour = _this3.doms.timerHouers[index].querySelector('.jDate-timer-hour-in');
 	                hour.style.top = time.getHours() * -20 + 'px';
 	                minute.style.top = time.getMinutes() * -20 + 'px';
 	                theTime[index] = time;
@@ -666,11 +682,11 @@
 	                if (type === jDate.Period) {
 	                    // this.doms.timerLine
 	                    if (index === 0) {
-	                        _this2.doms.timerLine.style.left = present * 100 + '%';
+	                        _this3.doms.timerLine.style.left = present * 100 + '%';
 	                    }
 
 	                    if (index === 1) {
-	                        _this2.doms.timerLine.style.right = (1 - present) * 100 + '%';
+	                        _this3.doms.timerLine.style.right = (1 - present) * 100 + '%';
 	                    }
 	                }
 	            });

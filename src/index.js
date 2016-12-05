@@ -289,7 +289,7 @@ class jDate {
                 //
                 _td.className = numState;
                 _td.innerHTML = ['<span>', '<div></div>', dateNum, '</span>'].join('');
-                _td.addEventListener('click', this.chooseDate.bind(self, _date));
+                _td.addEventListener('click', this.chooseDate.bind(this, _date));
 
                 //
                 dateDoms.push({
@@ -441,15 +441,6 @@ class jDate {
             });
 
             document.addEventListener('mousemove', function (e) {
-                // var max = 270;
-                // var min = 0;
-                // if (index === 0 && self.doms.timerHandles[1]) {
-                //     max = parseInt(getComputedStyle(self.doms.timerHandles[1]).left);
-                // }
-                // if (index === 1 && self.doms.timerHandles[0]) {
-                //     min = parseInt(getComputedStyle(self.doms.timerHandles[0]).left);
-                // }
-
                 if (!canMove) return false;
                 let delta = {
                     x: e.pageX - startCursor.x,
@@ -545,6 +536,21 @@ class jDate {
             self.calendar.style.cursor = 'auto';
         });
 
+        window.addEventListener('click', (e) => {
+            let dom = e.target;
+            let isFit = false;
+            while (dom) {
+                if (dom === this.doms.target || dom === this.calendar) {
+                    isFit = true;
+                    break;
+                }
+                dom = dom.parentElement;
+            }
+            if (!isFit) {
+                this.calendar.style.display = 'none';
+            }
+        });
+
         // cancel and ok button
         let btns = this.calendar.querySelectorAll('.jDate-calendar-action button');
         btns[0].addEventListener('click', () => {
@@ -604,7 +610,13 @@ class jDate {
         });
 
         this.doms.target.addEventListener('click', () => {
-            this.calendar.style.display = 'block';
+            if (this.calendar.style.display === 'none') {
+                var tarOffset = Tools.getOffset(this.doms.target);
+                var tarHeight = this.doms.target.offsetHeight;
+                this.calendar.style.top = tarOffset.top + tarHeight + 'px';
+                this.calendar.style.left = tarOffset.left + 'px';
+                this.calendar.style.display = 'block';
+            }
         })
     }
 
@@ -640,7 +652,9 @@ class jDate {
             }
         }
 
-        this.createMonthTable();
+        setTimeout(() => {
+            this.createMonthTable();
+        });
     }
 
     updateTime(times) {
