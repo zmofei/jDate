@@ -11,7 +11,13 @@ import Tools from './tools';
  */
 class jDate {
     constructor(id, config = {}) {
-        const target = document.querySelector('#' + id);
+        let target;
+        if (id instanceof HTMLElement) {
+            target = id;
+        } else {
+            target = document.querySelector('#' + id);
+        }
+
 
         this.maps = {
             month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -553,87 +559,8 @@ class jDate {
             this.calendar.style.display = 'none';
         });
         btns[1].addEventListener('click', () => {
-            var timeStr = '';
-            var datas = this.datas.date || [];
-            var retData = {};
-            var retTime = {};
-            switch (this.config.date.type) {
-                case jDate.Single:
-                    timeStr += Tools.getDate(datas[0]).join('/');
-                    retData = datas[0];
-                    break;
-                case jDate.Multi:
-                    timeStr += Tools.getDate(datas[0]).join('/') + ' (' + datas.length + ')';
-                    retData = datas;
-                    break;
-                case jDate.Period:
-                    if (datas.length >= 2) {
-                        timeStr += Tools.getDate(datas[0]).join('/');
-                        timeStr += ' - ';
-                        timeStr += Tools.getDate(datas[datas.length - 1]).join('/');
-                        retData.data = {
-                            start: datas[0],
-                            end: datas[datas.length - 1]
-                        };
-                    } else {
-                        timeStr += Tools.getDate(datas[0]).join('/');
-                        retData = {
-                            start: datas[0],
-                            end: datas[0]
-                        };
-                    }
-                    break;
-                default:
-            }
-
-            var times = this.datas.time || [];
-            timeStr += timeStr === '' ? '' : this.config.time.type === jDate.Null ? '' : ' ';
-            switch (this.config.time.type) {
-                case jDate.Single:
-                    timeStr += Tools.getTime(times[0]).join(':');
-                    retTime = times[0];
-                    break;
-                case jDate.Multi:
-                    timeStr += Tools.getTime(times[0]).join(':') + ' (' + times.length + ')';
-                    retTime = times;
-                    break;
-                case jDate.Period:
-                    var isSameTime = (times[0].getHours() * 100 + times[0].getMinutes()) === (times[1].getHours() * 100 + times[1].getMinutes())
-                    if (times.length >= 2 && !isSameTime) {
-                        timeStr += Tools.getTime(times[0]).join(':');
-                        timeStr += ' - ';
-                        timeStr += Tools.getTime(times[times.length - 1]).join(':');
-                        retTime = {
-                            start: times[0],
-                            end: times[1]
-                        }
-                    } else {
-                        timeStr += Tools.getTime(times[0]).join(':');
-                        retTime = {
-                            start: times[0],
-                            end: times[0]
-                        }
-                    }
-                    break;
-                default:
-            }
-
-
-            var target = this.doms.target;
-            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-                target.value = timeStr;
-            } else {
-                target.innerText = timeStr;
-            }
+            this.updateText();
             this.calendar.style.display = 'none';
-
-            if (this.config.change) {
-                this.config.change({
-                    text: timeStr,
-                    date: retData,
-                    time: retTime
-                });
-            }
         });
 
         this.doms.target.addEventListener('click', () => {
@@ -718,7 +645,7 @@ class jDate {
 
         this.doms.target.addEventListener('blur', (e) => {
             if (e.target.value !== '') {
-                btns[1].click();
+                this.updateText();
             }
         });
     }
@@ -787,6 +714,90 @@ class jDate {
         });
         this.datas.time = theTime;
     }
+
+    updateText() {
+        var timeStr = '';
+        var datas = this.datas.date || [];
+        var retData = {};
+        var retTime = {};
+        switch (this.config.date.type) {
+            case jDate.Single:
+                timeStr += Tools.getDate(datas[0]).join('/');
+                retData = datas[0];
+                break;
+            case jDate.Multi:
+                timeStr += Tools.getDate(datas[0]).join('/') + ' (' + datas.length + ')';
+                retData = datas;
+                break;
+            case jDate.Period:
+                if (datas.length >= 2) {
+                    timeStr += Tools.getDate(datas[0]).join('/');
+                    timeStr += ' - ';
+                    timeStr += Tools.getDate(datas[datas.length - 1]).join('/');
+                    retData.data = {
+                        start: datas[0],
+                        end: datas[datas.length - 1]
+                    };
+                } else {
+                    timeStr += Tools.getDate(datas[0]).join('/');
+                    retData = {
+                        start: datas[0],
+                        end: datas[0]
+                    };
+                }
+                break;
+            default:
+        }
+
+        var times = this.datas.time || [];
+        timeStr += timeStr === '' ? '' : this.config.time.type === jDate.Null ? '' : ' ';
+        switch (this.config.time.type) {
+            case jDate.Single:
+                timeStr += Tools.getTime(times[0]).join(':');
+                retTime = times[0];
+                break;
+            case jDate.Multi:
+                timeStr += Tools.getTime(times[0]).join(':') + ' (' + times.length + ')';
+                retTime = times;
+                break;
+            case jDate.Period:
+                var isSameTime = (times[0].getHours() * 100 + times[0].getMinutes()) === (times[1].getHours() * 100 + times[1].getMinutes())
+                if (times.length >= 2 && !isSameTime) {
+                    timeStr += Tools.getTime(times[0]).join(':');
+                    timeStr += ' - ';
+                    timeStr += Tools.getTime(times[times.length - 1]).join(':');
+                    retTime = {
+                        start: times[0],
+                        end: times[1]
+                    }
+                } else {
+                    timeStr += Tools.getTime(times[0]).join(':');
+                    retTime = {
+                        start: times[0],
+                        end: times[0]
+                    }
+                }
+                break;
+            default:
+        }
+
+
+        var target = this.doms.target;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+            target.value = timeStr;
+        } else {
+            target.innerText = timeStr;
+        }
+
+
+        if (this.config.change) {
+            this.config.change({
+                text: timeStr,
+                date: retData,
+                time: retTime
+            });
+        }
+    }
 }
 
 jDate.Null = 0;
@@ -797,4 +808,4 @@ jDate.Period = 3;
 // for material animateion
 require('./material');
 
-module.exports = global.jDate = jDate;
+module.exports = global.jDatev2 = jDate;

@@ -70,7 +70,12 @@
 
 	        _classCallCheck(this, jDate);
 
-	        var target = document.querySelector('#' + id);
+	        var target = void 0;
+	        if (id instanceof HTMLElement) {
+	            target = id;
+	        } else {
+	            target = document.querySelector('#' + id);
+	        }
 
 	        this.maps = {
 	            month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -559,86 +564,8 @@
 	                _this.calendar.style.display = 'none';
 	            });
 	            btns[1].addEventListener('click', function () {
-	                var timeStr = '';
-	                var datas = _this.datas.date || [];
-	                var retData = {};
-	                var retTime = {};
-	                switch (_this.config.date.type) {
-	                    case jDate.Single:
-	                        timeStr += _tools2.default.getDate(datas[0]).join('/');
-	                        retData = datas[0];
-	                        break;
-	                    case jDate.Multi:
-	                        timeStr += _tools2.default.getDate(datas[0]).join('/') + ' (' + datas.length + ')';
-	                        retData = datas;
-	                        break;
-	                    case jDate.Period:
-	                        if (datas.length >= 2) {
-	                            timeStr += _tools2.default.getDate(datas[0]).join('/');
-	                            timeStr += ' - ';
-	                            timeStr += _tools2.default.getDate(datas[datas.length - 1]).join('/');
-	                            retData.data = {
-	                                start: datas[0],
-	                                end: datas[datas.length - 1]
-	                            };
-	                        } else {
-	                            timeStr += _tools2.default.getDate(datas[0]).join('/');
-	                            retData = {
-	                                start: datas[0],
-	                                end: datas[0]
-	                            };
-	                        }
-	                        break;
-	                    default:
-	                }
-
-	                var times = _this.datas.time || [];
-	                timeStr += timeStr === '' ? '' : _this.config.time.type === jDate.Null ? '' : ' ';
-	                switch (_this.config.time.type) {
-	                    case jDate.Single:
-	                        timeStr += _tools2.default.getTime(times[0]).join(':');
-	                        retTime = times[0];
-	                        break;
-	                    case jDate.Multi:
-	                        timeStr += _tools2.default.getTime(times[0]).join(':') + ' (' + times.length + ')';
-	                        retTime = times;
-	                        break;
-	                    case jDate.Period:
-	                        var isSameTime = times[0].getHours() * 100 + times[0].getMinutes() === times[1].getHours() * 100 + times[1].getMinutes();
-	                        if (times.length >= 2 && !isSameTime) {
-	                            timeStr += _tools2.default.getTime(times[0]).join(':');
-	                            timeStr += ' - ';
-	                            timeStr += _tools2.default.getTime(times[times.length - 1]).join(':');
-	                            retTime = {
-	                                start: times[0],
-	                                end: times[1]
-	                            };
-	                        } else {
-	                            timeStr += _tools2.default.getTime(times[0]).join(':');
-	                            retTime = {
-	                                start: times[0],
-	                                end: times[0]
-	                            };
-	                        }
-	                        break;
-	                    default:
-	                }
-
-	                var target = _this.doms.target;
-	                if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-	                    target.value = timeStr;
-	                } else {
-	                    target.innerText = timeStr;
-	                }
+	                _this.updateText();
 	                _this.calendar.style.display = 'none';
-
-	                if (_this.config.change) {
-	                    _this.config.change({
-	                        text: timeStr,
-	                        date: retData,
-	                        time: retTime
-	                    });
-	                }
 	            });
 
 	            this.doms.target.addEventListener('click', function () {
@@ -718,7 +645,7 @@
 
 	            this.doms.target.addEventListener('blur', function (e) {
 	                if (e.target.value !== '') {
-	                    btns[1].click();
+	                    _this.updateText();
 	                }
 	            });
 	        }
@@ -794,6 +721,89 @@
 	            });
 	            this.datas.time = theTime;
 	        }
+	    }, {
+	        key: 'updateText',
+	        value: function updateText() {
+	            var timeStr = '';
+	            var datas = this.datas.date || [];
+	            var retData = {};
+	            var retTime = {};
+	            switch (this.config.date.type) {
+	                case jDate.Single:
+	                    timeStr += _tools2.default.getDate(datas[0]).join('/');
+	                    retData = datas[0];
+	                    break;
+	                case jDate.Multi:
+	                    timeStr += _tools2.default.getDate(datas[0]).join('/') + ' (' + datas.length + ')';
+	                    retData = datas;
+	                    break;
+	                case jDate.Period:
+	                    if (datas.length >= 2) {
+	                        timeStr += _tools2.default.getDate(datas[0]).join('/');
+	                        timeStr += ' - ';
+	                        timeStr += _tools2.default.getDate(datas[datas.length - 1]).join('/');
+	                        retData.data = {
+	                            start: datas[0],
+	                            end: datas[datas.length - 1]
+	                        };
+	                    } else {
+	                        timeStr += _tools2.default.getDate(datas[0]).join('/');
+	                        retData = {
+	                            start: datas[0],
+	                            end: datas[0]
+	                        };
+	                    }
+	                    break;
+	                default:
+	            }
+
+	            var times = this.datas.time || [];
+	            timeStr += timeStr === '' ? '' : this.config.time.type === jDate.Null ? '' : ' ';
+	            switch (this.config.time.type) {
+	                case jDate.Single:
+	                    timeStr += _tools2.default.getTime(times[0]).join(':');
+	                    retTime = times[0];
+	                    break;
+	                case jDate.Multi:
+	                    timeStr += _tools2.default.getTime(times[0]).join(':') + ' (' + times.length + ')';
+	                    retTime = times;
+	                    break;
+	                case jDate.Period:
+	                    var isSameTime = times[0].getHours() * 100 + times[0].getMinutes() === times[1].getHours() * 100 + times[1].getMinutes();
+	                    if (times.length >= 2 && !isSameTime) {
+	                        timeStr += _tools2.default.getTime(times[0]).join(':');
+	                        timeStr += ' - ';
+	                        timeStr += _tools2.default.getTime(times[times.length - 1]).join(':');
+	                        retTime = {
+	                            start: times[0],
+	                            end: times[1]
+	                        };
+	                    } else {
+	                        timeStr += _tools2.default.getTime(times[0]).join(':');
+	                        retTime = {
+	                            start: times[0],
+	                            end: times[0]
+	                        };
+	                    }
+	                    break;
+	                default:
+	            }
+
+	            var target = this.doms.target;
+	            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+	                target.value = timeStr;
+	            } else {
+	                target.innerText = timeStr;
+	            }
+
+	            if (this.config.change) {
+	                this.config.change({
+	                    text: timeStr,
+	                    date: retData,
+	                    time: retTime
+	                });
+	            }
+	        }
 	    }]);
 
 	    return jDate;
@@ -807,7 +817,7 @@
 	// for material animateion
 	__webpack_require__(2);
 
-	module.exports = global.jDate = jDate;
+	module.exports = global.jDatev2 = jDate;
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
