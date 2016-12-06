@@ -489,10 +489,6 @@ class jDate {
                 canMove = false;
             });
         });
-
-
-
-
     }
 
     initEventSys() {
@@ -559,20 +555,32 @@ class jDate {
         btns[1].addEventListener('click', () => {
             var timeStr = '';
             var datas = this.datas.date || [];
+            var retData = {};
+            var retTime = {};
             switch (this.config.date.type) {
                 case jDate.Single:
                     timeStr += Tools.getDate(datas[0]).join('/');
+                    retData = datas[0];
                     break;
                 case jDate.Multi:
                     timeStr += Tools.getDate(datas[0]).join('/') + ' (' + datas.length + ')';
+                    retData = datas;
                     break;
                 case jDate.Period:
                     if (datas.length >= 2) {
                         timeStr += Tools.getDate(datas[0]).join('/');
                         timeStr += ' - ';
                         timeStr += Tools.getDate(datas[datas.length - 1]).join('/');
+                        retData.data = {
+                            start: datas[0],
+                            end: datas[datas.length - 1]
+                        };
                     } else {
                         timeStr += Tools.getDate(datas[0]).join('/');
+                        retData = {
+                            start: datas[0],
+                            end: datas[0]
+                        };
                     }
                     break;
                 default:
@@ -583,17 +591,28 @@ class jDate {
             switch (this.config.time.type) {
                 case jDate.Single:
                     timeStr += Tools.getTime(times[0]).join(':');
+                    retTime = times[0];
                     break;
                 case jDate.Multi:
                     timeStr += Tools.getTime(times[0]).join(':') + ' (' + times.length + ')';
+                    retTime = times;
                     break;
                 case jDate.Period:
-                    if (times.length >= 2) {
+                    var isSameTime = (times[0].getHours() * 100 + times[0].getMinutes()) === (times[1].getHours() * 100 + times[1].getMinutes())
+                    if (times.length >= 2 && !isSameTime) {
                         timeStr += Tools.getTime(times[0]).join(':');
                         timeStr += ' - ';
                         timeStr += Tools.getTime(times[times.length - 1]).join(':');
+                        retTime = {
+                            start: times[0],
+                            end: times[1]
+                        }
                     } else {
                         timeStr += Tools.getTime(times[0]).join(':');
+                        retTime = {
+                            start: times[0],
+                            end: times[0]
+                        }
                     }
                     break;
                 default:
@@ -607,17 +626,101 @@ class jDate {
                 target.innerText = timeStr;
             }
             this.calendar.style.display = 'none';
+
+            if (this.config.change) {
+                this.config.change({
+                    text: timeStr,
+                    date: retData,
+                    time: retTime
+                });
+            }
         });
 
         this.doms.target.addEventListener('click', () => {
             if (this.calendar.style.display === 'none') {
+                // fit the position
                 var tarOffset = Tools.getOffset(this.doms.target);
                 var tarHeight = this.doms.target.offsetHeight;
-                this.calendar.style.top = tarOffset.top + tarHeight + 'px';
-                this.calendar.style.left = tarOffset.left + 'px';
+                var top = tarOffset.top + tarHeight;
+                var left = tarOffset.left;
+                this.calendar.style.top = top + 'px';
+                this.calendar.style.left = left + 'px';
                 this.calendar.style.display = 'block';
+                // 
+                var totalHeight = top + this.calendar.offsetHeight;
+                var visibleScreenHeight = document.body.scrollTop + document.body.clientHeight;
+                if (totalHeight > visibleScreenHeight) {
+                    top = tarOffset.top - this.calendar.offsetHeight;
+                    this.calendar.style.top = top + 'px';
+                }
+                var totalWidth = left + this.calendar.offsetWidth;
+                if (totalWidth > document.body.clientWidth) {
+                    left = left - (totalWidth - document.body.clientWidth);
+                    this.calendar.style.left = left + 'px';
+                }
             }
-        })
+        });
+
+        this.doms.target.addEventListener('input', (e) => {
+            let value = e.target.value;
+            if (this.config.date.type === jDate.Single) {
+                if (/\d{4}\/\d{1,2}\/\d{1,2}(?!\d)/.test(value)) {
+                    var date = value.slice(0, 10);
+                    date = date.split('/');
+                    this.datas.date = [new Date(date[0], date[1], date[2])];
+                    this.createMonthTable();
+                }
+            }
+
+            if (this.config.date.type === jDate.Period) {
+                if (/\d{4}\/\d{1,2}\/\d{1,2}\s\-\s\d{4}\/\d{1,2}\/\d{1,2}(?!\d)/.test(value)) {
+                    var date = value.slice(0, 23);
+                    date = date.split(' - ');
+                    for (var i in date) {
+                        date[i] = date[i].split('/');
+                    }
+                    var start = new Date(date[0][0], date[0][1], date[0][2]);
+                    var end = new Date(date[1][0], date[1][1], date[1][2])
+                    this.datas.date = [start, end];
+                    this.createMonthTable();
+                }
+            }
+
+            if (this.config.time.type === jDate.Single) {
+                var times = value.match(/(\d{1,2})\:(\d{1,2})(?!\d)/);
+                if (times) {
+                    var hour = times[1];
+                    var min = times[2];
+                    this.updateTime([
+                        new Date(2016, 10, 27, hour, min)
+                    ]);
+                }
+            }
+
+            if (this.config.time.type === jDate.Period) {
+                var times = value.match(/(\d{1,2})\:(\d{1,2})\s\-\s(\d{1,2})\:(\d{1,2})(?!\d)/);
+                if (times) {
+                    var shour = times[1];
+                    var smin = times[2];
+                    var ehour = times[3];
+                    var emin = times[4];
+                    var finalTimes = [
+                        new Date(2016, 10, 27, shour, smin),
+                        new Date(2016, 10, 27, ehour, emin)
+                    ];
+                    finalTimes.sort((a, b) => {
+                        return a - b
+                    })
+                    this.updateTime(finalTimes);
+                }
+            }
+        });
+
+        this.doms.target.addEventListener('blur', (e) => {
+            if (e.target.value !== '') {
+                btns[1].click();
+            }
+        });
     }
 
     setMonth(month) {

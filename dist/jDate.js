@@ -561,20 +561,32 @@
 	            btns[1].addEventListener('click', function () {
 	                var timeStr = '';
 	                var datas = _this.datas.date || [];
+	                var retData = {};
+	                var retTime = {};
 	                switch (_this.config.date.type) {
 	                    case jDate.Single:
 	                        timeStr += _tools2.default.getDate(datas[0]).join('/');
+	                        retData = datas[0];
 	                        break;
 	                    case jDate.Multi:
 	                        timeStr += _tools2.default.getDate(datas[0]).join('/') + ' (' + datas.length + ')';
+	                        retData = datas;
 	                        break;
 	                    case jDate.Period:
 	                        if (datas.length >= 2) {
 	                            timeStr += _tools2.default.getDate(datas[0]).join('/');
 	                            timeStr += ' - ';
 	                            timeStr += _tools2.default.getDate(datas[datas.length - 1]).join('/');
+	                            retData.data = {
+	                                start: datas[0],
+	                                end: datas[datas.length - 1]
+	                            };
 	                        } else {
 	                            timeStr += _tools2.default.getDate(datas[0]).join('/');
+	                            retData = {
+	                                start: datas[0],
+	                                end: datas[0]
+	                            };
 	                        }
 	                        break;
 	                    default:
@@ -585,17 +597,28 @@
 	                switch (_this.config.time.type) {
 	                    case jDate.Single:
 	                        timeStr += _tools2.default.getTime(times[0]).join(':');
+	                        retTime = times[0];
 	                        break;
 	                    case jDate.Multi:
 	                        timeStr += _tools2.default.getTime(times[0]).join(':') + ' (' + times.length + ')';
+	                        retTime = times;
 	                        break;
 	                    case jDate.Period:
-	                        if (times.length >= 2) {
+	                        var isSameTime = times[0].getHours() * 100 + times[0].getMinutes() === times[1].getHours() * 100 + times[1].getMinutes();
+	                        if (times.length >= 2 && !isSameTime) {
 	                            timeStr += _tools2.default.getTime(times[0]).join(':');
 	                            timeStr += ' - ';
 	                            timeStr += _tools2.default.getTime(times[times.length - 1]).join(':');
+	                            retTime = {
+	                                start: times[0],
+	                                end: times[1]
+	                            };
 	                        } else {
 	                            timeStr += _tools2.default.getTime(times[0]).join(':');
+	                            retTime = {
+	                                start: times[0],
+	                                end: times[0]
+	                            };
 	                        }
 	                        break;
 	                    default:
@@ -608,15 +631,94 @@
 	                    target.innerText = timeStr;
 	                }
 	                _this.calendar.style.display = 'none';
+
+	                if (_this.config.change) {
+	                    _this.config.change({
+	                        text: timeStr,
+	                        date: retData,
+	                        time: retTime
+	                    });
+	                }
 	            });
 
 	            this.doms.target.addEventListener('click', function () {
 	                if (_this.calendar.style.display === 'none') {
+	                    // fit the position
 	                    var tarOffset = _tools2.default.getOffset(_this.doms.target);
 	                    var tarHeight = _this.doms.target.offsetHeight;
-	                    _this.calendar.style.top = tarOffset.top + tarHeight + 'px';
-	                    _this.calendar.style.left = tarOffset.left + 'px';
+	                    var top = tarOffset.top + tarHeight;
+	                    var left = tarOffset.left;
+	                    _this.calendar.style.top = top + 'px';
+	                    _this.calendar.style.left = left + 'px';
 	                    _this.calendar.style.display = 'block';
+	                    // 
+	                    var totalHeight = top + _this.calendar.offsetHeight;
+	                    var visibleScreenHeight = document.body.scrollTop + document.body.clientHeight;
+	                    if (totalHeight > visibleScreenHeight) {
+	                        top = tarOffset.top - _this.calendar.offsetHeight;
+	                        _this.calendar.style.top = top + 'px';
+	                    }
+	                    var totalWidth = left + _this.calendar.offsetWidth;
+	                    if (totalWidth > document.body.clientWidth) {
+	                        left = left - (totalWidth - document.body.clientWidth);
+	                        _this.calendar.style.left = left + 'px';
+	                    }
+	                }
+	            });
+
+	            this.doms.target.addEventListener('input', function (e) {
+	                var value = e.target.value;
+	                if (_this.config.date.type === jDate.Single) {
+	                    if (/\d{4}\/\d{1,2}\/\d{1,2}(?!\d)/.test(value)) {
+	                        var date = value.slice(0, 10);
+	                        date = date.split('/');
+	                        _this.datas.date = [new Date(date[0], date[1], date[2])];
+	                        _this.createMonthTable();
+	                    }
+	                }
+
+	                if (_this.config.date.type === jDate.Period) {
+	                    if (/\d{4}\/\d{1,2}\/\d{1,2}\s\-\s\d{4}\/\d{1,2}\/\d{1,2}(?!\d)/.test(value)) {
+	                        var date = value.slice(0, 23);
+	                        date = date.split(' - ');
+	                        for (var i in date) {
+	                            date[i] = date[i].split('/');
+	                        }
+	                        var start = new Date(date[0][0], date[0][1], date[0][2]);
+	                        var end = new Date(date[1][0], date[1][1], date[1][2]);
+	                        _this.datas.date = [start, end];
+	                        _this.createMonthTable();
+	                    }
+	                }
+
+	                if (_this.config.time.type === jDate.Single) {
+	                    var times = value.match(/(\d{1,2})\:(\d{1,2})(?!\d)/);
+	                    if (times) {
+	                        var hour = times[1];
+	                        var min = times[2];
+	                        _this.updateTime([new Date(2016, 10, 27, hour, min)]);
+	                    }
+	                }
+
+	                if (_this.config.time.type === jDate.Period) {
+	                    var times = value.match(/(\d{1,2})\:(\d{1,2})\s\-\s(\d{1,2})\:(\d{1,2})(?!\d)/);
+	                    if (times) {
+	                        var shour = times[1];
+	                        var smin = times[2];
+	                        var ehour = times[3];
+	                        var emin = times[4];
+	                        var finalTimes = [new Date(2016, 10, 27, shour, smin), new Date(2016, 10, 27, ehour, emin)];
+	                        finalTimes.sort(function (a, b) {
+	                            return a - b;
+	                        });
+	                        _this.updateTime(finalTimes);
+	                    }
+	                }
+	            });
+
+	            this.doms.target.addEventListener('blur', function (e) {
+	                if (e.target.value !== '') {
+	                    btns[1].click();
 	                }
 	            });
 	        }
@@ -731,10 +833,15 @@
 	        return offset;
 	    },
 	    getDate: function getDate(date) {
-	        return [date.getFullYear(), date.getMonth(), date.getDate()];
+	        var year = date.getFullYear();
+	        var month = '0' + date.getMonth();
+	        var day = '0' + date.getDate();
+	        return [year, month.slice(-2), day.slice(-2)];
 	    },
 	    getTime: function getTime(date) {
-	        return [date.getHours(), date.getMinutes()];
+	        var hour = '0' + date.getHours();
+	        var min = '0' + date.getMinutes();
+	        return [hour.slice(-2), min.slice(-2)];
 	    },
 	    dateEqual: function dateEqual(paramA, paramB) {
 	        if (paramA && paramB) {

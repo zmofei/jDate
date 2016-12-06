@@ -15,7 +15,6 @@
             </div>
             <h2>..makes <strong>DATE & TIME</strong> choose easy that your think.</h2>
         </div>
-
         <div class="block">
             <div class="block-title">
                 Normal Date Picker
@@ -23,7 +22,6 @@
             <input id="date" placeholder="jDate" />
             <img src="images/jDate1.gif">
         </div>
-
         <div style="margin-bottom: 300px;">
             <input id="date2" placeholder="jDate" />
         </div>
@@ -43,7 +41,11 @@
     <script>
         var date = new Date();
 
-        new jDate('date');
+        new jDate('date',{
+            change: function(value){
+                console.log('value changed', value);
+            }
+        });
 
         new jDate('date2',{
             date: {
@@ -64,6 +66,9 @@
             date: {
                 type: jDate.Period,
                 value: [new Date(date.getFullYear(), date.getMonth(), 5),new Date(date.getFullYear(), date.getMonth(), 15)]
+            },
+            change: function(value){
+                console.log('value changed', value);
             }
         });
 
@@ -73,18 +78,27 @@
             },
             time: {
                 type: jDate.Single
+            },
+            change: function(value){
+                console.log('value changed', value);
             }
         });
 
         new jDate('date5',{
             time: {
                 type: jDate.Single
+            },
+            change: function(value){
+                console.log('value changed', value);
             }
         });
 
         new jDate('date6',{
             time: {
                 type: jDate.Period
+            },
+            change: function(value){
+                console.log('value changed', value);
             }
         });
     </script>

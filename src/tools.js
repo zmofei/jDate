@@ -12,10 +12,15 @@ var tools = {
         return offset;
     },
     getDate(date) {
-        return [date.getFullYear(), date.getMonth(), date.getDate()]
+        let year = date.getFullYear();
+        let month = '0' + date.getMonth();
+        let day = '0' + date.getDate();
+        return [year, month.slice(-2), day.slice(-2)]
     },
     getTime(date) {
-        return [date.getHours(), date.getMinutes()]
+        let hour = '0' + date.getHours();
+        let min = '0' + date.getMinutes();
+        return [hour.slice(-2), min.slice(-2)]
     },
     dateEqual(paramA, paramB) {
         if (paramA && paramB) {
