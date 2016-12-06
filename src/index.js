@@ -808,4 +808,4 @@ jDate.Period = 3;
 // for material animateion
 require('./material');
 
-module.exports = global.jDatev2 = jDate;
+module.exports = global.jDate = jDate;
