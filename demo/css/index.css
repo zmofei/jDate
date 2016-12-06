@@ -57,6 +57,22 @@ input {
 .block {
     margin: 0 20px;
     box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
+    overflow: hidden;
+}
+
+.block .img {
+    float: right;
+    border-left: 1px solid #eee;
+}
+
+.block .img1 {
+    width: 420px;
+    height: 491px;
+    background: url('../images/demo1.png');
+}
+
+.block:hover .img1 {
+    background: url('../images/demo1.gif');
 }
 
 .block-title {
@@ -65,4 +81,14 @@ input {
     height: 25px;
     line-height: 25px;
     font-size: 20px;
+}
+
+.block-body {
+    overflow: hidden;
+}
+
+.jdate-target {
+    margin: 20px;
+    width: 320px;
+    padding: 10px;
 }
