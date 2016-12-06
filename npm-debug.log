@@ -1,0 +1,43 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/zhuwenlong/.nvm/versions/node/v4.4.7/bin/node',
+1 verbose cli   '/Users/zhuwenlong/.nvm/versions/node/v4.4.7/bin/npm',
+1 verbose cli   'run',
+1 verbose cli   'build' ]
+2 info using npm@2.15.8
+3 info using node@v4.4.7
+4 verbose run-script [ 'prebuild', 'build', 'postbuild' ]
+5 info prebuild jDate@1.0.0
+6 info build jDate@1.0.0
+7 verbose unsafe-perm in lifecycle true
+8 info jDate@1.0.0 Failed to exec build script
+9 verbose stack Error: jDate@1.0.0 build: `webpack --config webpack.config.js -w`
+9 verbose stack Exit status 1
+9 verbose stack     at EventEmitter.<anonymous> (/Users/zhuwenlong/.nvm/versions/node/v4.4.7/lib/node_modules/npm/lib/utils/lifecycle.js:217:16)
+9 verbose stack     at emitTwo (events.js:87:13)
+9 verbose stack     at EventEmitter.emit (events.js:172:7)
+9 verbose stack     at ChildProcess.<anonymous> (/Users/zhuwenlong/.nvm/versions/node/v4.4.7/lib/node_modules/npm/lib/utils/spawn.js:24:14)
+9 verbose stack     at emitTwo (events.js:87:13)
+9 verbose stack     at ChildProcess.emit (events.js:172:7)
+9 verbose stack     at maybeClose (internal/child_process.js:827:16)
+9 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+10 verbose pkgid jDate@1.0.0
+11 verbose cwd /Users/zhuwenlong/dev/js/jDate
+12 error Darwin 16.1.0
+13 error argv "/Users/zhuwenlong/.nvm/versions/node/v4.4.7/bin/node" "/Users/zhuwenlong/.nvm/versions/node/v4.4.7/bin/npm" "run" "build"
+14 error node v4.4.7
+15 error npm  v2.15.8
+16 error code ELIFECYCLE
+17 error jDate@1.0.0 build: `webpack --config webpack.config.js -w`
+17 error Exit status 1
+18 error Failed at the jDate@1.0.0 build script 'webpack --config webpack.config.js -w'.
+18 error This is most likely a problem with the jDate package,
+18 error not with npm itself.
+18 error Tell the author that this fails on your system:
+18 error     webpack --config webpack.config.js -w
+18 error You can get information on how to open an issue for this project with:
+18 error     npm bugs jDate
+18 error Or if that isn't available, you can get their info via:
+18 error
+18 error     npm owner ls jDate
+18 error There is likely additional logging output above.
+19 verbose exit [ 1, true ]
