@@ -2,7 +2,7 @@
  * jDate
  * @author Mofei<13761509829@163.com> 
  */
-
+import "babel-polyfill";
 import Tools from './tools';
 
 
@@ -720,26 +720,42 @@ class jDate {
         var datas = this.datas.date || [];
         var retData = {};
         var retTime = {};
+
+        var firstTime = Tools.getDate(datas[0]);
+        firstTime[1] = parseInt(firstTime[1], 10) + 1;
         switch (this.config.date.type) {
             case jDate.Single:
-                timeStr += Tools.getDate(datas[0]).join('/');
+                timeStr += firstTime.join('/');
                 retData = datas[0];
                 break;
             case jDate.Multi:
-                timeStr += Tools.getDate(datas[0]).join('/') + ' (' + datas.length + ')';
+                timeStr += firstTime.join('/') + ' (' + datas.length + ')';
                 retData = datas;
                 break;
             case jDate.Period:
                 if (datas.length >= 2) {
-                    timeStr += Tools.getDate(datas[0]).join('/');
-                    timeStr += ' - ';
-                    timeStr += Tools.getDate(datas[datas.length - 1]).join('/');
-                    retData.data = {
-                        start: datas[0],
-                        end: datas[datas.length - 1]
-                    };
+                    var secondTime = Tools.getDate(datas[datas.length - 1]);
+                    secondTime[1] = parseInt(secondTime[1], 10) + 1;
+
+                    if (datas[0] <= datas[datas.length - 1]) {
+                        timeStr += firstTime.join('/');
+                        timeStr += ' - ';
+                        timeStr += secondTime.join('/');
+                        retData.data = {
+                            start: datas[0],
+                            end: datas[datas.length - 1]
+                        };
+                    } else {
+                        timeStr += secondTime.join('/');
+                        timeStr += ' - ';
+                        timeStr += firstTime.join('/');
+                        retData.data = {
+                            start: datas[datas.length - 1],
+                            end: datas[0]
+                        };
+                    }
                 } else {
-                    timeStr += Tools.getDate(datas[0]).join('/');
+                    timeStr += firstTime.join('/');
                     retData = {
                         start: datas[0],
                         end: datas[0]
@@ -808,4 +824,4 @@ jDate.Period = 3;
 // for material animateion
 require('./material');
 
-module.exports = global.jDate = jDate;
+module.exports = global.jDatev2 = jDate;
