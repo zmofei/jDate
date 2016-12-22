@@ -115,7 +115,9 @@
 	        this.initEvent();
 
 	        // 
-	        if (config.date || config.time) {
+	        var isDateData = config.date && config.date.value && config.date.value.length > 0;
+	        var isTimeData = config.time && config.time.value && config.date.time.length > 0;
+	        if (isDateData || isTimeData) {
 	            this.updateText();
 	        }
 	    }
