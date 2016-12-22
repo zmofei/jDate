@@ -568,7 +568,7 @@ class jDate {
             this.calendar.style.display = 'none';
         });
 
-        this.doms.target.addEventListener('click', () => {
+        this.doms.target.addEventListener('click', (e) => {
             if (this.calendar.style.display === 'none') {
                 // fit the position
                 var tarOffset = Tools.getOffset(this.doms.target);
@@ -591,6 +591,10 @@ class jDate {
                     this.calendar.style.left = left + 'px';
                 }
             }
+            this.doms.target.edit = {
+                has: false,
+                val: e.target.value
+            };
         });
 
         this.doms.target.addEventListener('input', (e) => {
@@ -646,10 +650,14 @@ class jDate {
                     this.updateTime(finalTimes);
                 }
             }
+
+            if (value !== this.doms.target.edit.val) {
+                this.doms.target.edit.has = true;
+            }
         });
 
         this.doms.target.addEventListener('blur', (e) => {
-            if (e.target.value !== '') {
+            if (this.doms.target.edit.has) {
                 this.updateText();
             }
         });

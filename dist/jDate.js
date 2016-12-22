@@ -576,7 +576,7 @@
 	                _this.calendar.style.display = 'none';
 	            });
 
-	            this.doms.target.addEventListener('click', function () {
+	            this.doms.target.addEventListener('click', function (e) {
 	                if (_this.calendar.style.display === 'none') {
 	                    // fit the position
 	                    var tarOffset = _tools2.default.getOffset(_this.doms.target);
@@ -599,6 +599,10 @@
 	                        _this.calendar.style.left = left + 'px';
 	                    }
 	                }
+	                _this.doms.target.edit = {
+	                    has: false,
+	                    val: e.target.value
+	                };
 	            });
 
 	            this.doms.target.addEventListener('input', function (e) {
@@ -649,10 +653,14 @@
 	                        _this.updateTime(finalTimes);
 	                    }
 	                }
+
+	                if (value !== _this.doms.target.edit.val) {
+	                    _this.doms.target.edit.has = true;
+	                }
 	            });
 
 	            this.doms.target.addEventListener('blur', function (e) {
-	                if (e.target.value !== '') {
+	                if (_this.doms.target.edit.has) {
 	                    _this.updateText();
 	                }
 	            });
