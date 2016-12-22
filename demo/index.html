@@ -4,6 +4,8 @@
     <title>jDate</title>
     <link href="../src/jDate.css" type="text/css" rel="stylesheet" />
     <link href="css/index.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
     <script src="../dist/jDate.js"></script>
 </head>
 
@@ -20,88 +22,158 @@
                 Normal Date Picker
             </div>
             <div class="block-body">
-                <input class="jdate-target" id="date" placeholder="jDate" />
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date" placeholder="jDate" />
+                    <pre></pre>
+                </div>
                 <div class="img img1"></div>
             </div>
         </div>
-        <div style="margin-bottom: 300px;">
-            <input id="date2" placeholder="jDate" />
+        <div class="block">
+            <div class="block-title">
+                Normal Date Picker
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date2" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
         </div>
-        <div style="margin-bottom: 300px;">
-            <input id="date3" placeholder="jDate" />
+        <div class="block">
+            <div class="block-title">
+                Normal Date Picker
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date3" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
         </div>
-        <div style="margin-bottom: 400px;">
-            <input id="date4" placeholder="jDate" />
+        <div class="block">
+            <div class="block-title">
+                Normal Date Picker
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date4" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
         </div>
-        <div style="margin-bottom: 200px;">
-            <input id="date5" placeholder="jDate" />
+        <div class="block">
+            <div class="block-title">
+                Normal Date Picker
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date5" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
         </div>
-        <div style="margin-bottom: 200px;">
-            <input id="date6" placeholder="jDate" />
+        <div class="block">
+            <div class="block-title">
+                Normal Date Picker
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date6" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
         </div>
     </div>
-    <script>
+    <script class="script">
         var date = new Date();
-
-        new jDate(document.getElementById('date'),{
-            change: function(value){
+        new jDate(document.getElementById('date'), {
+            change: function (value) {
                 console.log('value changed', value);
             }
         });
-
-        new jDate('date2',{
+    </script>
+    <script class="script">
+        new jDate('date2', {
             date: {
                 type: jDate.Multi,
                 value: [
                     new Date(date.getFullYear(), date.getMonth(), 1),
-                    new Date(date.getFullYear(), date.getMonth(), 15), 
-                    new Date(date.getFullYear(), date.getMonth(), 19), 
+                    new Date(date.getFullYear(), date.getMonth(), 15),
+                    new Date(date.getFullYear(), date.getMonth(), 19),
                     date
                 ]
             },
-            change: function(value){
+            change: function (value) {
                 console.log('value changed', value);
             }
         });
-
-        new jDate('date3',{
+    </script>
+    <script class="script">
+        new jDate('date3', {
             date: {
                 type: jDate.Period,
-                value: [new Date(date.getFullYear(), date.getMonth(), 5),new Date(date.getFullYear(), date.getMonth(), 15)]
+                value: [
+                    new Date(date.getFullYear(), date.getMonth(), 5),
+                    new Date(date.getFullYear(), date.getMonth(), 15)
+                ]
             },
-            change: function(value){
+            change: function (value) {
                 console.log('value changed', value);
             }
         });
-
-        new jDate('date4',{
+    </script>
+    <script class="script">
+        new jDate('date4', {
             date: {
                 type: jDate.Period
             },
             time: {
                 type: jDate.Single
             },
-            change: function(value){
+            change: function (value) {
                 console.log('value changed', value);
             }
         });
-
-        new jDate('date5',{
+    </script>
+    <script class="script">
+        new jDate('date5', {
             time: {
                 type: jDate.Single
             },
-            change: function(value){
+            change: function (value) {
                 console.log('value changed', value);
             }
         });
-
-        new jDate('date6',{
+    </script>
+    <script class="script">
+        new jDate('date6', {
             time: {
                 type: jDate.Period
             },
-            change: function(value){
+            change: function (value) {
                 console.log('value changed', value);
             }
+        });
+    </script>
+    <script>
+        var codes = document.querySelectorAll('pre');
+        var scripts = document.querySelectorAll('.script');
+
+
+        hljs.configure({
+            languages: ['javascript']
+        });
+
+
+        codes.forEach(function (code, index) {
+            code.innerText = scripts[index].innerText.replace(/^\n\s{4}/, '').replace(/(\n)\s{4}/g, '$1');
+            hljs.highlightBlock(code);
         });
     </script>
 </body>

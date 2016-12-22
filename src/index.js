@@ -52,6 +52,11 @@ class jDate {
 
         this.initDom();
         this.initEvent();
+
+        // 
+        if ((config.date || config.time)) {
+            this.updateText();
+        }
     }
 
     initDom() {
@@ -575,7 +580,7 @@ class jDate {
                 this.calendar.style.display = 'block';
                 // 
                 var totalHeight = top + this.calendar.offsetHeight;
-                var visibleScreenHeight = document.body.scrollTop + document.body.clientHeight;
+                var visibleScreenHeight = document.body.scrollTop + Math.max(document.body.clientHeight || 0, document.documentElement.clientHeight || 0);
                 if (totalHeight > visibleScreenHeight) {
                     top = tarOffset.top - this.calendar.offsetHeight;
                     this.calendar.style.top = top + 'px';
@@ -824,4 +829,4 @@ jDate.Period = 3;
 // for material animateion
 require('./material');
 
-module.exports = global.jDatev2 = jDate;
+module.exports = global.jDatev2 = global.jDate = jDate;

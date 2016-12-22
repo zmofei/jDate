@@ -113,6 +113,11 @@
 
 	        this.initDom();
 	        this.initEvent();
+
+	        // 
+	        if (config.date || config.time) {
+	            this.updateText();
+	        }
 	    }
 
 	    _createClass(jDate, [{
@@ -583,7 +588,7 @@
 	                    _this.calendar.style.display = 'block';
 	                    // 
 	                    var totalHeight = top + _this.calendar.offsetHeight;
-	                    var visibleScreenHeight = document.body.scrollTop + document.body.clientHeight;
+	                    var visibleScreenHeight = document.body.scrollTop + Math.max(document.body.clientHeight || 0, document.documentElement.clientHeight || 0);
 	                    if (totalHeight > visibleScreenHeight) {
 	                        top = tarOffset.top - _this.calendar.offsetHeight;
 	                        _this.calendar.style.top = top + 'px';
@@ -836,7 +841,7 @@
 	// for material animateion
 	__webpack_require__(300);
 
-	module.exports = global.jDatev2 = jDate;
+	module.exports = global.jDatev2 = global.jDate = jDate;
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
