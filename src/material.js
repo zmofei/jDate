@@ -44,7 +44,9 @@ class Material {
         var self = this;
         this.material.className = 'material finished';
         setTimeout(function () {
-            self.materialBox.remove();
+            if (self.materialBox && self.materialBox.parentElement) {
+                self.materialBox.parentElement.removeChild(self.materialBox);
+            }
         }, 300);
     }
 }
