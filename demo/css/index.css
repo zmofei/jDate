@@ -51,7 +51,6 @@ input {
     color: #999;
     width: 250px;
     font-size: 14px;
-    border-radius: 4px;
 }
 
 .block {
@@ -91,6 +90,7 @@ input {
     /*margin: 20px;*/
     width: 714px;
     padding: 10px;
+    border: 4px solid #ccc;
 }
 
 .jdate-code {
