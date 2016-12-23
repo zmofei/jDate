@@ -12,6 +12,7 @@ body {
     padding: 0;
     font-family: 'h5u', 'Source Sans Pro', sans-serif;
     font-weight: 200;
+    background: #eaeaea;
 }
 
 .body {
@@ -55,8 +56,15 @@ input {
 
 .block {
     margin: 0 20px;
-    box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
+    /*box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;*/
+    border: 1px solid rgba(0, 0, 0, 0.125);
     overflow: hidden;
+    background: white;
+    margin-bottom: 20px;
+}
+
+.block:hover {
+    box-shadow: 0px 0px 17px 6px rgba(0, 0, 0, 0.08);
 }
 
 .block .img {
@@ -75,11 +83,14 @@ input {
 }
 
 .block-title {
-    background: rgb(232, 232, 232);
+    background: white;
+    border-bottom: 1px solid #ddd;
     padding: 10px;
     height: 25px;
     line-height: 25px;
     font-size: 20px;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
 }
 
 .block-body {
@@ -95,7 +106,8 @@ input {
 
 .jdate-code {
     float: left;
-    width: 718px;
+    width: 715px;
+    overflow: hidden;
     padding: 10px;
 }
 
