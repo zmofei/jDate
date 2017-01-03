@@ -55,7 +55,7 @@ class jDate {
 
         // 
         const isDateData = config.date && config.date.value && config.date.value.length > 0;
-        const isTimeData = config.time && config.time.value && config.date.time.length > 0;
+        const isTimeData = config.time && config.time.value && config.time.value.length > 0;
         if (isDateData || isTimeData) {
             this.updateText();
         }
