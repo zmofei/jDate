@@ -34,14 +34,13 @@ class jDate {
         for (var i in config) {
             this.config[i] = config[i];
         }
+        this.config.date = this.config.date || {};
+        this.config.date.type = (config.date || config.time) ? (config.date && config.date.type) || jDate.Null : jDate.Single;
 
-        this.config.date = {
-            type: (config.date || config.time) ? (config.date && config.date.type) || jDate.Null : jDate.Single
-        };
-        this.config.time = {
-            type: (config.date || config.time) ? (config.time && config.time.type) || jDate.Null : jDate.Single,
-            step: 1
-        };
+        this.config.time = this.config.time || {};
+        this.config.time.type = (config.date || config.time) ? (config.time && config.time.type) || jDate.Null : jDate.Single;
+        this.config.time.step = 1;
+
 
         var toadyDate = Tools.getDate(new Date());
         var todayTime = Tools.getTime(new Date());
@@ -284,7 +283,29 @@ class jDate {
                 var _date = new Date(date.getFullYear(), date.getMonth(), dateNum);
                 var numState = '';
 
-                if (this.config.date.type === jDate.Period && choosedDate.length === undefined) {
+                // check for disable?
+                var disable = false;
+
+                if (this.config.date.start) {
+                    disable = (Tools.dateEqual(this.config.date.start, _date)) > 0;
+                }
+
+                if (this.config.date.end) {
+                    disable = disable || ((Tools.dateEqual(this.config.date.end, _date)) < 0);
+                }
+
+                if (this.config.date.disable) {
+                    this.config.date.disable.forEach((disableDate) => {
+                        if (Tools.dateEqual(disableDate, _date) === 0) {
+                            disable = true;
+                        }
+                    });
+                }
+
+                //
+                if (disable) {
+                    numState = 'disable';
+                } else if (this.config.date.type === jDate.Period && choosedDate.length === undefined) {
                     if (+choosedDate.startTime === +_date || +choosedDate.endTime === +_date) {
                         numState = 'active';
                     }
@@ -293,16 +314,19 @@ class jDate {
                     }
                 } else {
                     choosedDate.forEach((theDate) => {
-                        if (Tools.dateEqual(theDate, _date)) {
+                        if (Tools.dateEqual(theDate, _date) === 0) {
                             numState = 'active';
                         }
                     });
                 }
+                //
 
                 //
                 _td.className = numState;
                 _td.innerHTML = ['<span>', '<div></div>', dateNum, '</span>'].join('');
-                _td.addEventListener('click', this.chooseDate.bind(this, _date));
+                if (!disable) {
+                    _td.addEventListener('click', this.chooseDate.bind(this, _date));
+                }
 
                 //
                 dateDoms.push({

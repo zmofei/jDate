@@ -23,11 +23,7 @@ var tools = {
         return [hour.slice(-2), min.slice(-2)]
     },
     dateEqual(paramA, paramB) {
-        if (paramA && paramB) {
-            return this.getDate(paramA).join(',') === this.getDate(paramB).join(',');
-        } else {
-            return false;
-        }
+        return this.getDate(paramA).join('') - this.getDate(paramB).join('');
     }
 }
 

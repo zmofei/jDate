@@ -94,6 +94,19 @@
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
 }
 
+.jDate-calendar-table table td.disable span {
+    cursor: not-allowed;
+    font-size: 13px;
+    color: #999;
+    font-weight: normal;
+}
+
+.jDate-calendar-table table td.disable span:hover div {
+    width: 0px;
+    height: 0px;
+    opacity: 0;
+}
+
 .jDate-calendar-table table td.during span {
     font-size: 13px;
     color: #fff;

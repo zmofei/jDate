@@ -92,6 +92,18 @@
                 <div class="img img1"></div>
             </div>
         </div>
+        <div class="block">
+            <div class="block-title">
+                Disable Date
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date7" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
+        </div>
     </div>
     <script class="script">
         var date = new Date();
@@ -158,6 +170,24 @@
         new jDate('date6', {
             time: {
                 type: jDate.Period
+            },
+            change: function (value) {
+                console.log('value changed', value);
+            }
+        });
+    </script>
+    <script class="script">
+        new jDate('date7', {
+            date: {
+                type: jDate.Single,
+                value: [
+                    new Date(date.getFullYear(), date.getMonth(), 6)
+                ],
+                start: new Date(date.getFullYear(), date.getMonth(), 3),
+                end: new Date(date.getFullYear(), date.getMonth() + 1, 15),
+                disable: [
+                    new Date(date.getFullYear(), date.getMonth(), 15)
+                ],
             },
             change: function (value) {
                 console.log('value changed', value);
