@@ -1,6 +1,7 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <title>jDate</title>
     <link href="../src/jDate.css" type="text/css" rel="stylesheet" />
     <link href="css/index.css" type="text/css" rel="stylesheet" />
@@ -20,6 +21,7 @@
             </div>
             <h2>..makes <strong>DATE & TIME</strong> choose easy that your think.</h2>
         </div>
+
         <div class="block">
             <div class="block-title">
                 Normal Date Picker
@@ -32,9 +34,18 @@
                 <div class="img img1"></div>
             </div>
         </div>
+        <script class="script">
+            var date = new Date();
+            new jDate(document.getElementById('date'), {
+                change: function (value) {
+                    console.log('value changed', value);
+                }
+            });
+        </script>
+
         <div class="block">
             <div class="block-title">
-                Normal Date Picker
+                Multi Date Picker
             </div>
             <div class="block-body">
                 <div class="jdate-code">
@@ -44,9 +55,27 @@
                 <div class="img img1"></div>
             </div>
         </div>
+        <script class="script">
+            new jDate('date2', {
+                date: {
+                    type: jDate.Multi,
+                    value: [
+                        new Date(date.getFullYear(), date.getMonth(), 1),
+                        new Date(date.getFullYear(), date.getMonth(), 15),
+                        new Date(date.getFullYear(), date.getMonth(), 19),
+                        date
+                    ]
+                },
+                change: function (value) {
+                    console.log('value changed', value);
+                }
+            });
+        </script>
+
+
         <div class="block">
             <div class="block-title">
-                Normal Date Picker
+                Date period Picker
             </div>
             <div class="block-body">
                 <div class="jdate-code">
@@ -56,45 +85,25 @@
                 <div class="img img1"></div>
             </div>
         </div>
+        <script class="script">
+            new jDate('date3', {
+                date: {
+                    type: jDate.Period,
+                    value: [
+                        new Date(date.getFullYear(), date.getMonth(), 5),
+                        new Date(date.getFullYear(), date.getMonth(), 15)
+                    ]
+                },
+                change: function (value) {
+                    console.log('value changed', value);
+                }
+            });
+        </script>
+
+
         <div class="block">
             <div class="block-title">
-                Normal Date Picker
-            </div>
-            <div class="block-body">
-                <div class="jdate-code">
-                    <input class="jdate-target" id="date4" placeholder="jDate" />
-                    <pre></pre>
-                </div>
-                <div class="img img1"></div>
-            </div>
-        </div>
-        <div class="block">
-            <div class="block-title">
-                Normal Date Picker
-            </div>
-            <div class="block-body">
-                <div class="jdate-code">
-                    <input class="jdate-target" id="date5" placeholder="jDate" />
-                    <pre></pre>
-                </div>
-                <div class="img img1"></div>
-            </div>
-        </div>
-        <div class="block">
-            <div class="block-title">
-                Normal Date Picker
-            </div>
-            <div class="block-body">
-                <div class="jdate-code">
-                    <input class="jdate-target" id="date6" placeholder="jDate" />
-                    <pre></pre>
-                </div>
-                <div class="img img1"></div>
-            </div>
-        </div>
-        <div class="block">
-            <div class="block-title">
-                Disable Date
+                Disable & Enable Date
             </div>
             <div class="block-body">
                 <div class="jdate-code">
@@ -104,106 +113,128 @@
                 <div class="img img1"></div>
             </div>
         </div>
+        <script class="script">
+            new jDate('date7', {
+                date: {
+                    type: jDate.Single,
+                    value: [
+                        new Date(date.getFullYear(), date.getMonth(), 6)
+                    ],
+                    start: new Date(date.getFullYear(), date.getMonth(), 3),
+                    end: new Date(date.getFullYear(), date.getMonth() + 1, 15),
+                    disable: [
+                        new Date(date.getFullYear(), date.getMonth(), 15)
+                    ],
+                    enable: [
+                        new Date(date.getFullYear(), date.getMonth() - 1, 15)
+                    ]
+                },
+                change: function (value) {
+                    console.log('value changed', value);
+                }
+            });
+        </script>
+
+
+        <div class="block">
+            <div class="block-title">
+                Date period Picker with Time
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date4" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
+        </div>
+        <script class="script">
+            new jDate('date4', {
+                date: {
+                    type: jDate.Period
+                },
+                time: {
+                    type: jDate.Single
+                },
+                change: function (value) {
+                    console.log('value changed', value);
+                }
+            });
+        </script>
+
+
+        <div class="block">
+            <div class="block-title">
+                Time Picker
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date5" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
+        </div>
+        <script class="script">
+            new jDate('date5', {
+                time: {
+                    type: jDate.Single
+                },
+                change: function (value) {
+                    console.log('value changed', value);
+                }
+            });
+        </script>
+
+        <div class="block">
+            <div class="block-title">
+                Time period Picker
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date6" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
+        </div>
+        <script class="script">
+            new jDate('date6', {
+                time: {
+                    type: jDate.Period
+                },
+                change: function (value) {
+                    console.log('value changed', value);
+                }
+            });
+        </script>
+
+
+        <div class="block">
+            <div class="block-title">
+                I18n
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date8" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
+        </div>
     </div>
     <script class="script">
-        var date = new Date();
-        new jDate(document.getElementById('date'), {
-            change: function (value) {
-                console.log('value changed', value);
-            }
+        new jDate('date8', {
+            lan: jDate.lan.ja // jDate.lan[ja|zh|en]
         });
     </script>
-    <script class="script">
-        new jDate('date2', {
-            date: {
-                type: jDate.Multi,
-                value: [
-                    new Date(date.getFullYear(), date.getMonth(), 1),
-                    new Date(date.getFullYear(), date.getMonth(), 15),
-                    new Date(date.getFullYear(), date.getMonth(), 19),
-                    date
-                ]
-            },
-            change: function (value) {
-                console.log('value changed', value);
-            }
-        });
-    </script>
-    <script class="script">
-        new jDate('date3', {
-            date: {
-                type: jDate.Period,
-                value: [
-                    new Date(date.getFullYear(), date.getMonth(), 5),
-                    new Date(date.getFullYear(), date.getMonth(), 15)
-                ]
-            },
-            change: function (value) {
-                console.log('value changed', value);
-            }
-        });
-    </script>
-    <script class="script">
-        new jDate('date4', {
-            date: {
-                type: jDate.Period
-            },
-            time: {
-                type: jDate.Single
-            },
-            change: function (value) {
-                console.log('value changed', value);
-            }
-        });
-    </script>
-    <script class="script">
-        new jDate('date5', {
-            time: {
-                type: jDate.Single
-            },
-            change: function (value) {
-                console.log('value changed', value);
-            }
-        });
-    </script>
-    <script class="script">
-        new jDate('date6', {
-            time: {
-                type: jDate.Period
-            },
-            change: function (value) {
-                console.log('value changed', value);
-            }
-        });
-    </script>
-    <script class="script">
-        new jDate('date7', {
-            date: {
-                type: jDate.Single,
-                value: [
-                    new Date(date.getFullYear(), date.getMonth(), 6)
-                ],
-                start: new Date(date.getFullYear(), date.getMonth(), 3),
-                end: new Date(date.getFullYear(), date.getMonth() + 1, 15),
-                disable: [
-                    new Date(date.getFullYear(), date.getMonth(), 15)
-                ],
-            },
-            change: function (value) {
-                console.log('value changed', value);
-            }
-        });
-    </script>
+
     <script>
         var codes = document.querySelectorAll('pre');
         var scripts = document.querySelectorAll('.script');
-
-
         hljs.configure({
             languages: ['javascript']
         });
-
-
         codes.forEach(function (code, index) {
             code.innerText = scripts[index].innerText.replace(/^\n\s{4}/, '').replace(/(\n)\s{4}/g, '$1');
             hljs.highlightBlock(code);

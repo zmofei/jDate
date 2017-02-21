@@ -4,6 +4,7 @@
  */
 import "babel-polyfill";
 import Tools from './tools';
+import I18N from './i18n';
 
 
 /**
@@ -18,11 +19,18 @@ class jDate {
             target = document.querySelector('#' + id);
         }
 
-
-        this.maps = {
-            month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-            week: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-        }
+        let lan = config.lan ||
+            (
+                navigator.language ? (
+                    navigator.language.split('-').length > 1 ? (
+                        jDate.lan[navigator.language.split('-')[0]] ?
+                        jDate.lan[navigator.language.split('-')[0]] :
+                        jDate.lan.en
+                    ) : jDate.lan.en
+                ) :
+                jDate.lan.en
+            );
+        this.maps = I18N[lan.id];
 
         this.date = new Date();
         this.doms = {
@@ -39,7 +47,7 @@ class jDate {
 
         this.config.time = this.config.time || {};
         this.config.time.type = (config.date || config.time) ? (config.time && config.time.type) || jDate.Null : jDate.Single;
-        this.config.time.step = 1;
+        this.config.time.step = this.config.time.step || 1;
 
 
         var toadyDate = Tools.getDate(new Date());
@@ -84,8 +92,8 @@ class jDate {
         var actionDom = document.createElement('div');
         actionDom.className = 'jDate-calendar-action';
         actionDom.innerHTML = [
-            '<span class="material-ani"><button class="jDate-calendar-cancel">cancel</button></span>',
-            '<span class="material-ani"><button class="jDate-calendar-ok">ok</button></span>',
+            '<span class="material-ani"><button class="jDate-calendar-cancel">' + this.maps.btns[0] + '</button></span>',
+            '<span class="material-ani"><button class="jDate-calendar-ok">' + this.maps.btns[1] + '</button></span>',
         ].join('');
         calendar.appendChild(actionDom);
         document.body.appendChild(calendar);
@@ -298,6 +306,14 @@ class jDate {
                     this.config.date.disable.forEach((disableDate) => {
                         if (Tools.dateEqual(disableDate, _date) === 0) {
                             disable = true;
+                        }
+                    });
+                }
+
+                if (this.config.date.enable) {
+                    this.config.date.enable.forEach((enableDate) => {
+                        if (Tools.dateEqual(enableDate, _date) === 0) {
+                            disable = false;
                         }
                     });
                 }
@@ -636,7 +652,7 @@ class jDate {
 
             if (this.config.date.type === jDate.Period) {
                 if (/\d{4}\/\d{1,2}\/\d{1,2}\s\-\s\d{4}\/\d{1,2}\/\d{1,2}(?!\d)/.test(value)) {
-                    var date = value.slice(0, 23);
+                    let date = value.slice(0, 23);
                     date = date.split(' - ');
                     for (var i in date) {
                         date[i] = date[i].split('/');
@@ -860,6 +876,20 @@ jDate.Single = 1;
 jDate.Multi = 2;
 jDate.Period = 3;
 
+jDate.lan = {
+    "zh": {
+        id: 'CN',
+        name: '中文'
+    },
+    'en': {
+        id: 'EN',
+        name: 'English'
+    },
+    'ja': {
+        id: 'JP',
+        name: '日本の'
+    }
+}
 // for material animateion
 require('./material');
 

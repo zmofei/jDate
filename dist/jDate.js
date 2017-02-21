@@ -58,6 +58,10 @@
 
 	var _tools2 = _interopRequireDefault(_tools);
 
+	var _i18n = __webpack_require__(300);
+
+	var _i18n2 = _interopRequireDefault(_i18n);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -80,10 +84,8 @@
 	            target = document.querySelector('#' + id);
 	        }
 
-	        this.maps = {
-	            month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-	            week: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-	        };
+	        var lan = config.lan || (navigator.language ? navigator.language.split('-').length > 1 ? jDate.lan[navigator.language.split('-')[0]] ? jDate.lan[navigator.language.split('-')[0]] : jDate.lan.en : jDate.lan.en : jDate.lan.en);
+	        this.maps = _i18n2.default[lan.id];
 
 	        this.date = new Date();
 	        this.doms = {
@@ -100,7 +102,7 @@
 
 	        this.config.time = this.config.time || {};
 	        this.config.time.type = config.date || config.time ? config.time && config.time.type || jDate.Null : jDate.Single;
-	        this.config.time.step = 1;
+	        this.config.time.step = this.config.time.step || 1;
 
 	        var toadyDate = _tools2.default.getDate(new Date());
 	        var todayTime = _tools2.default.getTime(new Date());
@@ -145,7 +147,7 @@
 	            // action button
 	            var actionDom = document.createElement('div');
 	            actionDom.className = 'jDate-calendar-action';
-	            actionDom.innerHTML = ['<span class="material-ani"><button class="jDate-calendar-cancel">cancel</button></span>', '<span class="material-ani"><button class="jDate-calendar-ok">ok</button></span>'].join('');
+	            actionDom.innerHTML = ['<span class="material-ani"><button class="jDate-calendar-cancel">' + this.maps.btns[0] + '</button></span>', '<span class="material-ani"><button class="jDate-calendar-ok">' + this.maps.btns[1] + '</button></span>'].join('');
 	            calendar.appendChild(actionDom);
 	            document.body.appendChild(calendar);
 	        }
@@ -301,6 +303,14 @@
 	                        this.config.date.disable.forEach(function (disableDate) {
 	                            if (_tools2.default.dateEqual(disableDate, _date) === 0) {
 	                                disable = true;
+	                            }
+	                        });
+	                    }
+
+	                    if (this.config.date.enable) {
+	                        this.config.date.enable.forEach(function (enableDate) {
+	                            if (_tools2.default.dateEqual(enableDate, _date) === 0) {
+	                                disable = false;
 	                            }
 	                        });
 	                    }
@@ -643,13 +653,13 @@
 
 	                if (_this.config.date.type === jDate.Period) {
 	                    if (/\d{4}\/\d{1,2}\/\d{1,2}\s\-\s\d{4}\/\d{1,2}\/\d{1,2}(?!\d)/.test(value)) {
-	                        var date = value.slice(0, 23);
-	                        date = date.split(' - ');
-	                        for (var i in date) {
-	                            date[i] = date[i].split('/');
+	                        var _date2 = value.slice(0, 23);
+	                        _date2 = _date2.split(' - ');
+	                        for (var i in _date2) {
+	                            _date2[i] = _date2[i].split('/');
 	                        }
-	                        var start = new Date(date[0][0], date[0][1], date[0][2]);
-	                        var end = new Date(date[1][0], date[1][1], date[1][2]);
+	                        var start = new Date(_date2[0][0], _date2[0][1], _date2[0][2]);
+	                        var end = new Date(_date2[1][0], _date2[1][1], _date2[1][2]);
 	                        _this.datas.date = [start, end];
 	                        _this.createMonthTable();
 	                    }
@@ -871,8 +881,22 @@
 	jDate.Multi = 2;
 	jDate.Period = 3;
 
+	jDate.lan = {
+	    "zh": {
+	        id: 'CN',
+	        name: '中文'
+	    },
+	    'en': {
+	        id: 'EN',
+	        name: 'English'
+	    },
+	    'ja': {
+	        id: 'JP',
+	        name: '日本の'
+	    }
+	};
 	// for material animateion
-	__webpack_require__(300);
+	__webpack_require__(301);
 
 	module.exports = global.jDatev2 = global.jDate = jDate;
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
@@ -9681,6 +9705,35 @@
 
 /***/ },
 /* 300 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var i18n = {
+	    EN: {
+	        month: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+	        week: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+	        btns: ['cancel', 'ok']
+	    },
+	    CN: {
+	        month: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+	        week: ['日', '一', '二', '三', '四', '五', '六'],
+	        btns: ['取消', '确认']
+	    },
+	    JP: {
+	        month: ['いちがつ', 'にがつ', 'さんがつ', 'しがつ', 'ごがつ', 'ろくがつ', 'しちがつ', 'はちがつ', 'くがつ', 'じゅうがつ', 'じゅういちがつ', 'じゅうにがつ'],
+	        week: ['日', '月', '火', '水', '木', '金', '土'],
+	        btns: ['キャンセル', 'かくてい']
+	    }
+	};
+
+	exports.default = i18n;
+
+/***/ },
+/* 301 */
 /***/ function(module, exports) {
 
 	'use strict';
