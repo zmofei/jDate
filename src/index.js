@@ -54,8 +54,23 @@ class jDate {
         var todayTime = Tools.getTime(new Date());
         this.datas = {
             date: (config.date && config.date.value) || [new Date(toadyDate[0], toadyDate[1], toadyDate[2])],
-            time: (config.time && config.time.value) || [new Date(toadyDate[0], toadyDate[1], toadyDate[2], todayTime[0], todayTime[1]), new Date(toadyDate[0], toadyDate[1], toadyDate[2], 23, 59)]
+            time: (config.time && config.time.value) || [
+                [todayTime[0], todayTime[1]],
+                [24, 0]
+            ]
         }
+        // fix time fit for config.time.step
+        this.datas.time.map((time) => {
+            let step = this.config.time.step;
+            let timeBySecond = time[0] * 60 + parseInt(time[1], 10);
+            let timeAfterStep = Math.round(timeBySecond / step) * step;
+            let hour = parseInt(timeAfterStep / 60);
+            let minute = timeAfterStep % 60;
+            return [hour, minute];
+        });
+
+
+
 
         this.initDom();
         this.initEvent();
@@ -204,7 +219,7 @@ class jDate {
             '            <span style="left: 25%;">06:00</span>',
             '            <span style="left: 50%;">12:00</span>',
             '            <span style="left: 75%;">18:00</span>',
-            '            <span style="left: 100%;">23:59</span>',
+            '            <span style="left: 100%;">24:00</span>',
             '        </div>',
             '    </div>',
             '</div>'
@@ -228,7 +243,6 @@ class jDate {
     }
 
     createMonthTable() {
-        var self = this;
         // get the first day of this month
         var date = new Date(Date.parse(this.date));
         date.setDate(1);
@@ -423,7 +437,7 @@ class jDate {
                 });
 
                 self.updateTime([
-                    new Date(2016, 10, 27, values[0], values[1])
+                    values
                 ]);
             }
         });
@@ -438,9 +452,9 @@ class jDate {
             self.doms.timerTitleShows[index].addEventListener('click', function () {
                 self.doms.timerTitleShows[index].style.display = 'none';
                 self.doms.timeInputs[index].style.display = (isPeriod ? 'inline-block' : 'block');
-                var hour = self.datas.time[index].getHours();
+                var hour = self.datas.time[index][0];
                 hour = hour < 10 ? '0' + hour : hour;
-                var minute = self.datas.time[index].getMinutes();
+                var minute = self.datas.time[index][1];
                 minute = minute < 10 ? '0' + minute : minute;
                 input.value = hour + ' : ' + minute;
                 input.focus();
@@ -460,11 +474,14 @@ class jDate {
                 var hour = values[0] || 0;
                 var minute = values[1] || 0;
                 hour = Math.max(0, hour);
-                hour = Math.min(23, hour);
+                hour = Math.min(24, hour);
                 minute = Math.max(0, minute);
                 minute = Math.min(59, minute);
+                if (hour === 24) {
+                    minute = 0;
+                }
 
-                time[index] = new Date(2016, 10, 27, hour, minute);
+                time[index] = [hour, minute];
                 self.updateTime(time);
 
                 if (e.keyCode == '13') {
@@ -511,27 +528,28 @@ class jDate {
                 let hour = parseInt(timeMin / 60) || 0;
                 let minute = timeMin % 60 || 0;
                 if (hour >= 24) {
-                    hour = 23;
-                    minute = 59;
+                    hour = 24;
+                    minute = 0;
                 }
 
                 tempTime = [hour, minute];
-                if (index === 0 && time[1]) {
-                    let otherHours = time[1].getHours();
-                    let otherMinute = time[1].getMinutes();
-                    if ((otherHours * 100 + otherMinute) < (hour * 100 + minute)) {
-                        tempTime = [otherHours, otherMinute];
+                if (self.config.time.type === jDate.Period) {
+                    if (index === 0 && time[1]) {
+                        let otherHours = time[1][0];
+                        let otherMinute = time[1][1];
+                        if ((otherHours * 100 + otherMinute) < (hour * 100 + minute)) {
+                            tempTime = [otherHours, otherMinute];
+                        }
+                    }
+                    if (index === 1 && time[0]) {
+                        let otherHours = time[0][0];
+                        let otherMinute = time[0][1];
+                        if ((otherHours * 100 + parseInt(otherMinute)) > (hour * 100 + minute)) {
+                            tempTime = [otherHours, otherMinute];
+                        }
                     }
                 }
-                if (index === 1 && time[0]) {
-                    let otherHours = time[0].getHours();
-                    let otherMinute = time[0].getMinutes();
-                    if ((otherHours * 100 + otherMinute) > (hour * 100 + minute)) {
-                        tempTime = [otherHours, otherMinute];
-                    }
-                }
-                time[index] = new Date(2016, 10, 27, tempTime[0], tempTime[1]);
-
+                time[index] = tempTime;
                 self.updateTime(time);
             });
 
@@ -602,9 +620,11 @@ class jDate {
 
         // cancel and ok button
         let btns = this.calendar.querySelectorAll('.jDate-calendar-action button');
+        // cancel btn
         btns[0].addEventListener('click', () => {
             this.calendar.style.display = 'none';
         });
+        // ok btn
         btns[1].addEventListener('click', () => {
             this.updateText();
             this.calendar.style.display = 'none';
@@ -667,27 +687,25 @@ class jDate {
             if (this.config.time.type === jDate.Single) {
                 var times = value.match(/(\d{1,2})\:(\d{1,2})(?!\d)/);
                 if (times) {
-                    var hour = times[1];
-                    var min = times[2];
                     this.updateTime([
-                        new Date(2016, 10, 27, hour, min)
+                        times
                     ]);
                 }
             }
 
             if (this.config.time.type === jDate.Period) {
-                var times = value.match(/(\d{1,2})\:(\d{1,2})\s\-\s(\d{1,2})\:(\d{1,2})(?!\d)/);
+                let times = value.match(/(\d{1,2})\:(\d{1,2})\s\-\s(\d{1,2})\:(\d{1,2})(?!\d)/);
                 if (times) {
                     var shour = times[1];
                     var smin = times[2];
                     var ehour = times[3];
                     var emin = times[4];
                     var finalTimes = [
-                        new Date(2016, 10, 27, shour, smin),
-                        new Date(2016, 10, 27, ehour, emin)
+                        [shour, smin],
+                        [ehour, emin]
                     ];
                     finalTimes.sort((a, b) => {
-                        return a - b
+                        return (a[0] * 60 + a[1]) - (b[0] * 60 + b[1])
                     })
                     this.updateTime(finalTimes);
                 }
@@ -710,7 +728,8 @@ class jDate {
         this.createMonthTable();
     }
 
-    chooseDate(date) {
+    chooseDate(date, e) {
+        // console.log(e.shiftKey)
         var fitIndex = null;
         var isFit = this.datas.date.some((theDate, index) => {
             if (+theDate === +date) {
@@ -725,7 +744,25 @@ class jDate {
         } else {
             switch (this.config.date.type) {
                 case jDate.Multi:
+                    // deal with shiftKey
+                    if (this.lastChooseDate && e.shiftKey) {
+                        var start = new Date(Math.min(this.lastChooseDate, date));
+                        var end = new Date(Math.max(this.lastChooseDate, date));
+                        while (start <= end) {
+                            this.datas.date.push(new Date(start));
+                            start.setDate(start.getDate() + 1);
+                        }
+                    }
+                    this.lastChooseDate = date;
                     this.datas.date.push(date);
+                    // clean date
+                    var dateCache = {};
+                    this.datas.date = this.datas.date.filter((date) => {
+                        const dateStr = Tools.getDate(date).join('-');
+                        const haveThisDate = !!dateCache[dateStr];
+                        dateCache[dateStr] = true;
+                        return !haveThisDate;
+                    });
                     break;
                 case jDate.Period:
                     this.datas.date.push(date);
@@ -740,20 +777,22 @@ class jDate {
         setTimeout(() => {
             this.createMonthTable();
         });
+        e.preventDefault();
+        e.stopPropagation();
     }
 
     updateTime(times) {
         var type = this.config.time.type;
         var theTime = this.datas.time;
         times.forEach((time, index) => {
-            let totalMin = time.getHours() * 60 + time.getMinutes();
+            let totalMin = time[0] * 60 + parseInt(time[1], 10);
             let present = totalMin / (24 * 60);
             this.doms.timerHandles[index].style.left = present * 100 + '%';
 
             let minute = this.doms.timerMinutes[index].querySelector('.jDate-timer-minute-in');
             let hour = this.doms.timerHouers[index].querySelector('.jDate-timer-hour-in');
-            hour.style.top = time.getHours() * -20 + 'px';
-            minute.style.top = time.getMinutes() * -20 + 'px';
+            hour.style.top = time[0] * -20 + 'px';
+            minute.style.top = time[1] * -20 + 'px';
             theTime[index] = time;
 
             if (type === jDate.Period) {
@@ -825,27 +864,27 @@ class jDate {
         switch (this.config.time.type) {
             case jDate.Single:
                 timeStr += Tools.getTime(times[0]).join(':');
-                retTime = times[0];
+                retTime = new Date(1989, 10, 27, times[0][0], times[0][1]);
                 break;
             case jDate.Multi:
                 timeStr += Tools.getTime(times[0]).join(':') + ' (' + times.length + ')';
-                retTime = times;
+                retTime = new Date(1989, 10, 27, times[0], times[1]);
                 break;
             case jDate.Period:
-                var isSameTime = (times[0].getHours() * 100 + times[0].getMinutes()) === (times[1].getHours() * 100 + times[1].getMinutes())
+                var isSameTime = (times[0][0] * 100 + times[0][1]) === (times[1][0] * 100 + times[1][1])
                 if (times.length >= 2 && !isSameTime) {
                     timeStr += Tools.getTime(times[0]).join(':');
                     timeStr += ' - ';
                     timeStr += Tools.getTime(times[times.length - 1]).join(':');
                     retTime = {
-                        start: times[0],
-                        end: times[1]
+                        start: new Date(1989, 10, 27, times[0][0], times[0][1]),
+                        end: new Date(1989, 10, 27, times[1][0], times[1][1])
                     }
                 } else {
                     timeStr += Tools.getTime(times[0]).join(':');
                     retTime = {
-                        start: times[0],
-                        end: times[0]
+                        start: new Date(1989, 10, 27, times[0][0], times[0][1]),
+                        end: new Date(1989, 10, 27, times[0][0], times[0][1])
                     }
                 }
                 break;

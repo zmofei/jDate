@@ -1,0 +1,63 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>jDate</title>
+    <link href="../src/jDate.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="./js/highlight.min.css">
+    <script src="./js/highlight.min.js"></script>
+    <script src="../dist/jDate.js"></script>
+    <style>
+        .jdate-target {
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            padding: 5px 10px;
+            width: 250px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="body">
+        <div class="block">
+            <div class="block-title">
+                Normal Date Picker
+            </div>
+            <div class="block-body">
+                <div class="jdate-code">
+                    <input class="jdate-target" id="date" placeholder="jDate" />
+                    <pre></pre>
+                </div>
+                <div class="img img1"></div>
+            </div>
+        </div>
+    </div>
+
+    <script class="script">
+        var date = new Date();
+        new jDate(document.getElementById('date'), {
+            time: {
+                type: jDate.Period,
+                // type: jDate.Single,
+                // value: [
+                // new Date(date.getFullYear(), date.getMonth(), 1),
+                // new Date(date.getFullYear(), date.getMonth(), 15),
+                // new Date(date.getFullYear(), date.getMonth(), 19),
+                // date
+                // ]
+                // step: 60,
+
+            },
+            change: function (value) {
+                console.log('value changed', value);
+            }
+        });
+    </script>
+</body>
+
+</html>

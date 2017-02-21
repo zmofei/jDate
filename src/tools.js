@@ -18,8 +18,14 @@ var tools = {
         return [year, month.slice(-2), day.slice(-2)]
     },
     getTime(date) {
-        let hour = '0' + date.getHours();
-        let min = '0' + date.getMinutes();
+        let hour, min;
+        if (date instanceof Date) {
+            hour = '0' + date.getHours();
+            min = '0' + date.getMinutes();
+        } else {
+            hour = '0' + date[0];
+            min = '0' + date[1];
+        }
         return [hour.slice(-2), min.slice(-2)]
     },
     dateEqual(paramA, paramB) {
