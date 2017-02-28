@@ -113,13 +113,9 @@
 	            time: config.time && config.time.value || [[todayTime[0], todayTime[1]], [24, 0]]
 	        };
 	        // fix time fit for config.time.step
-	        this.datas.time.map(function (time) {
+	        this.datas.time = this.datas.time.map(function (time) {
 	            var step = _this.config.time.step;
-	            var timeBySecond = time[0] * 60 + parseInt(time[1], 10);
-	            var timeAfterStep = Math.round(timeBySecond / step) * step;
-	            var hour = parseInt(timeAfterStep / 60);
-	            var minute = timeAfterStep % 60;
-	            return [hour, minute];
+	            return _tools2.default.fixTimeByStep(time, step);
 	        });
 
 	        this.initDom();
@@ -465,17 +461,8 @@
 	                        return parseInt(item);
 	                    });
 
-	                    var hour = values[0] || 0;
-	                    var minute = values[1] || 0;
-	                    hour = Math.max(0, hour);
-	                    hour = Math.min(24, hour);
-	                    minute = Math.max(0, minute);
-	                    minute = Math.min(59, minute);
-	                    if (hour === 24) {
-	                        minute = 0;
-	                    }
-
-	                    time[index] = [hour, minute];
+	                    var step = self.config.time.step || 1;
+	                    time[index] = _tools2.default.fixTimeByStep(values, step);
 	                    self.updateTime(time);
 
 	                    if (e.keyCode == '13') {
@@ -515,30 +502,23 @@
 	                    handle.style.left = left + 'px';
 	                    e.preventDefault();
 	                    e.stopPropagation();
-	                    var timeMin = parseInt(left / 270 * (24 * 60));
-
 	                    var step = self.config.time.step || 1;
-	                    timeMin = Math.round(timeMin / step) * step;
-	                    var hour = parseInt(timeMin / 60) || 0;
-	                    var minute = timeMin % 60 || 0;
-	                    if (hour >= 24) {
-	                        hour = 24;
-	                        minute = 0;
-	                    }
 
-	                    tempTime = [hour, minute];
+	                    var timeMin = parseInt(left / 270 * (24 * 60));
+	                    tempTime = _tools2.default.fixTimeByStep(timeMin, step);
+
 	                    if (self.config.time.type === jDate.Period) {
 	                        if (index === 0 && time[1]) {
 	                            var otherHours = time[1][0];
 	                            var otherMinute = time[1][1];
-	                            if (otherHours * 100 + otherMinute < hour * 100 + minute) {
+	                            if (otherHours * 100 + otherMinute < tempTime[0] * 100 + tempTime[1]) {
 	                                tempTime = [otherHours, otherMinute];
 	                            }
 	                        }
 	                        if (index === 1 && time[0]) {
 	                            var _otherHours = time[0][0];
 	                            var _otherMinute = time[0][1];
-	                            if (_otherHours * 100 + parseInt(_otherMinute) > hour * 100 + minute) {
+	                            if (_otherHours * 100 + parseInt(_otherMinute) > tempTime[0] * 100 + tempTime[1]) {
 	                                tempTime = [_otherHours, _otherMinute];
 	                            }
 	                        }
@@ -691,14 +671,16 @@
 	                if (_this2.config.time.type === jDate.Period) {
 	                    var _times = value.match(/(\d{1,2})\:(\d{1,2})\s\-\s(\d{1,2})\:(\d{1,2})(?!\d)/);
 	                    if (_times) {
-	                        var shour = _times[1];
-	                        var smin = _times[2];
-	                        var ehour = _times[3];
-	                        var emin = _times[4];
-	                        var finalTimes = [[shour, smin], [ehour, emin]];
+	                        var step = self.config.time.step || 1;
+
+	                        var sTime = _tools2.default.fixTimeByStep([_times[1], _times[2]], step);
+	                        var eTime = _tools2.default.fixTimeByStep([_times[3], _times[4]], step);
+	                        //
+	                        var finalTimes = [sTime, eTime];
 	                        finalTimes.sort(function (a, b) {
-	                            return a[0] * 60 + a[1] - (b[0] * 60 + b[1]);
+	                            return parseInt(a[0] * 60) + a[1] - (parseInt(b[0] * 60) + b[1]);
 	                        });
+
 	                        _this2.updateTime(finalTimes);
 	                    }
 	                }
@@ -727,14 +709,16 @@
 
 	            // console.log(e.shiftKey)
 	            var fitIndex = null;
+
 	            var isFit = this.datas.date.some(function (theDate, index) {
-	                if (+theDate === +date) {
+	                if (_tools2.default.getDate(theDate).join('-') === _tools2.default.getDate(date).join('-')) {
 	                    fitIndex = index;
 	                    return true;
 	                } else {
 	                    return false;
 	                }
 	            });
+
 	            if (isFit) {
 	                this.datas.date.splice(fitIndex, 1);
 	            } else {
@@ -815,48 +799,52 @@
 	            var retData = {};
 	            var retTime = {};
 
-	            var firstTime = _tools2.default.getDate(datas[0]);
-	            firstTime[1] = parseInt(firstTime[1], 10) + 1;
-	            switch (this.config.date.type) {
-	                case jDate.Single:
-	                    timeStr += firstTime.join('/');
-	                    retData = datas[0];
-	                    break;
-	                case jDate.Multi:
-	                    timeStr += firstTime.join('/') + ' (' + datas.length + ')';
-	                    retData = datas;
-	                    break;
-	                case jDate.Period:
-	                    if (datas.length >= 2) {
-	                        var secondTime = _tools2.default.getDate(datas[datas.length - 1]);
-	                        secondTime[1] = parseInt(secondTime[1], 10) + 1;
+	            if (datas.length >= 1) {
+	                var firstTime = _tools2.default.getDate(datas[0]);
+	                firstTime[1] = parseInt(firstTime[1], 10) + 1;
+	                switch (this.config.date.type) {
+	                    case jDate.Single:
+	                        timeStr += firstTime.join('/');
+	                        retData = datas[0];
+	                        break;
+	                    case jDate.Multi:
+	                        timeStr += firstTime.join('/') + (datas.length > 1 ? '(' + datas.length + ')' : '');
+	                        retData = datas;
+	                        break;
+	                    case jDate.Period:
+	                        if (datas.length >= 2) {
+	                            var secondTime = _tools2.default.getDate(datas[datas.length - 1]);
+	                            secondTime[1] = parseInt(secondTime[1], 10) + 1;
 
-	                        if (datas[0] <= datas[datas.length - 1]) {
-	                            timeStr += firstTime.join('/');
-	                            timeStr += ' - ';
-	                            timeStr += secondTime.join('/');
-	                            retData.data = {
-	                                start: datas[0],
-	                                end: datas[datas.length - 1]
-	                            };
+	                            if (datas[0] <= datas[datas.length - 1]) {
+	                                timeStr += firstTime.join('/');
+	                                timeStr += ' - ';
+	                                timeStr += secondTime.join('/');
+	                                retData.data = {
+	                                    start: datas[0],
+	                                    end: datas[datas.length - 1]
+	                                };
+	                            } else {
+	                                timeStr += secondTime.join('/');
+	                                timeStr += ' - ';
+	                                timeStr += firstTime.join('/');
+	                                retData.data = {
+	                                    start: datas[datas.length - 1],
+	                                    end: datas[0]
+	                                };
+	                            }
 	                        } else {
-	                            timeStr += secondTime.join('/');
-	                            timeStr += ' - ';
 	                            timeStr += firstTime.join('/');
-	                            retData.data = {
-	                                start: datas[datas.length - 1],
+	                            retData = {
+	                                start: datas[0],
 	                                end: datas[0]
 	                            };
 	                        }
-	                    } else {
-	                        timeStr += firstTime.join('/');
-	                        retData = {
-	                            start: datas[0],
-	                            end: datas[0]
-	                        };
-	                    }
-	                    break;
-	                default:
+	                        break;
+	                    default:
+	                }
+	            } else {
+	                retData = null;
 	            }
 
 	            var times = this.datas.time || [];
@@ -864,11 +852,11 @@
 	            switch (this.config.time.type) {
 	                case jDate.Single:
 	                    timeStr += _tools2.default.getTime(times[0]).join(':');
-	                    retTime = new Date(1989, 10, 27, times[0][0], times[0][1]);
+	                    retTime = times[0];
 	                    break;
 	                case jDate.Multi:
 	                    timeStr += _tools2.default.getTime(times[0]).join(':') + ' (' + times.length + ')';
-	                    retTime = new Date(1989, 10, 27, times[0], times[1]);
+	                    retTime = times;
 	                    break;
 	                case jDate.Period:
 	                    var isSameTime = times[0][0] * 100 + times[0][1] === times[1][0] * 100 + times[1][1];
@@ -877,14 +865,14 @@
 	                        timeStr += ' - ';
 	                        timeStr += _tools2.default.getTime(times[times.length - 1]).join(':');
 	                        retTime = {
-	                            start: new Date(1989, 10, 27, times[0][0], times[0][1]),
-	                            end: new Date(1989, 10, 27, times[1][0], times[1][1])
+	                            start: times[0],
+	                            end: times[1]
 	                        };
 	                    } else {
 	                        timeStr += _tools2.default.getTime(times[0]).join(':');
 	                        retTime = {
-	                            start: new Date(1989, 10, 27, times[0][0], times[0][1]),
-	                            end: new Date(1989, 10, 27, times[0][0], times[0][1])
+	                            start: times[0],
+	                            end: times[0]
 	                        };
 	                    }
 	                    break;
@@ -9740,6 +9728,21 @@
 	    },
 	    dateEqual: function dateEqual(paramA, paramB) {
 	        return this.getDate(paramA).join('') - this.getDate(paramB).join('');
+	    },
+	    fixTimeByStep: function fixTimeByStep(time, step) {
+	        var timeBySecond = time;
+	        if (typeof time !== 'number') {
+	            var hour = parseInt(time[0]);
+	            var min = parseInt(time[1]);
+	            min = Math.min(59, min);
+	            if (hour >= 24) {
+	                hour = 24;
+	                min = 0;
+	            }
+	            timeBySecond = hour * 60 + min;
+	        }
+	        var timeAfterStep = Math.round(timeBySecond / step) * step;
+	        return [timeAfterStep / 60, timeAfterStep % 60];
 	    }
 	};
 

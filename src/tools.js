@@ -30,6 +30,21 @@ var tools = {
     },
     dateEqual(paramA, paramB) {
         return this.getDate(paramA).join('') - this.getDate(paramB).join('');
+    },
+    fixTimeByStep(time, step) {
+        let timeBySecond = time;
+        if (typeof time !== 'number') {
+            let hour = parseInt(time[0]);
+            let min = parseInt(time[1]);
+            min = Math.min(59, min);
+            if (hour >= 24) {
+                hour = 24;
+                min = 0;
+            }
+            timeBySecond = hour * 60 + min;
+        }
+        let timeAfterStep = Math.round(timeBySecond / step) * step;
+        return [timeAfterStep / 60, timeAfterStep % 60]
     }
 }
 
