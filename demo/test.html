@@ -41,8 +41,9 @@
     <script class="script">
         var date = new Date();
         new jDate(document.getElementById('date'), {
-            time: {
-                type: jDate.Period,
+            date: {
+                type: jDate.Multi,
+                // type: jDate.Period,
                 // type: jDate.Single,
                 // value: [
                 //     new Date(),
@@ -50,7 +51,7 @@
                 //     // new Date(date.getFullYear(), date.getMonth(), 19),
                 //     // date
                 // ]
-                step: 60
+                // step: 60
             },
             change: function (value) {
                 console.log('value changed', value);

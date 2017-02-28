@@ -62,6 +62,10 @@
 
 	var _i18n2 = _interopRequireDefault(_i18n);
 
+	var _shiftkey = __webpack_require__(302);
+
+	var _shiftkey2 = _interopRequireDefault(_shiftkey);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -344,7 +348,7 @@
 	                    _td.className = numState;
 	                    _td.innerHTML = ['<span>', '<div></div>', dateNum, '</span>'].join('');
 	                    if (!disable) {
-	                        _td.addEventListener('click', this.chooseDate.bind(this, _date));
+	                        _td.addEventListener('mousedown', this.chooseDate.bind(this, _date));
 	                    }
 
 	                    //
@@ -707,7 +711,6 @@
 	        value: function chooseDate(date, e) {
 	            var _this3 = this;
 
-	            // console.log(e.shiftKey)
 	            var fitIndex = null;
 
 	            var isFit = this.datas.date.some(function (theDate, index) {
@@ -724,25 +727,7 @@
 	            } else {
 	                switch (this.config.date.type) {
 	                    case jDate.Multi:
-	                        // deal with shiftKey
-	                        if (this.lastChooseDate && e.shiftKey) {
-	                            var start = new Date(Math.min(this.lastChooseDate, date));
-	                            var end = new Date(Math.max(this.lastChooseDate, date));
-	                            while (start <= end) {
-	                                this.datas.date.push(new Date(start));
-	                                start.setDate(start.getDate() + 1);
-	                            }
-	                        }
-	                        this.lastChooseDate = date;
 	                        this.datas.date.push(date);
-	                        // clean date
-	                        var dateCache = {};
-	                        this.datas.date = this.datas.date.filter(function (date) {
-	                            var dateStr = _tools2.default.getDate(date).join('-');
-	                            var haveThisDate = !!dateCache[dateStr];
-	                            dateCache[dateStr] = true;
-	                            return !haveThisDate;
-	                        });
 	                        break;
 	                    case jDate.Period:
 	                        this.datas.date.push(date);
@@ -753,6 +738,12 @@
 	                        break;
 	                }
 	            }
+
+	            _shiftkey2.default.call(this, {
+	                type: isFit ? 'cancel' : 'choose',
+	                dealDate: date,
+	                event: e
+	            });
 
 	            setTimeout(function () {
 	                _this3.createMonthTable();
@@ -9868,6 +9859,64 @@
 	        amimates[i].hide();
 	    }
 	});
+
+/***/ },
+/* 302 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var lastChoose = {
+	    type: null, // [choose|calcel]
+	    value: null
+	};
+
+	function cleanDate(dates) {
+	    var cache = {};
+	    dates.forEach(function (date) {
+	        var dateArr = [date.getFullYear(), date.getMonth() + 1, date.getDate()];
+	        cache[dateArr.join('-')] = dateArr;
+	    });
+
+	    return Object.keys(cache).map(function (key) {
+	        return new Date(cache[key]);
+	    });
+	}
+
+	function shiftKey(obj) {
+	    var _this = this;
+
+	    if (obj.event.shiftKey) {
+	        if (lastChoose.value) {
+	            (function () {
+	                var startTime = new Date(Math.min(obj.dealDate, lastChoose.value));
+	                var endTime = new Date(Math.max(obj.dealDate, lastChoose.value));
+	                while (startTime <= endTime) {
+	                    switch (lastChoose.type) {
+	                        case 'choose':
+	                            _this.datas.date.push(new Date(startTime));
+	                            break;
+	                        case 'cancel':
+	                            _this.datas.date = _this.datas.date.filter(function (date) {
+	                                return date < startTime || date > endTime;
+	                            });
+	                            break;
+	                    }
+	                    startTime.setDate(startTime.getDate() + 1);
+	                }
+	            })();
+	        }
+	        this.datas.date = cleanDate(this.datas.date);
+	        obj.event.preventDefault();
+	    }
+	    lastChoose.type = obj.type;
+	    lastChoose.value = obj.dealDate;
+	}
+
+	exports.default = shiftKey;
 
 /***/ }
 /******/ ]);

@@ -5,6 +5,7 @@
 import "babel-polyfill";
 import Tools from './tools';
 import I18N from './i18n';
+import shiftKey from './plugin/shiftkey.js';
 
 
 /**
@@ -348,7 +349,7 @@ class jDate {
                 _td.className = numState;
                 _td.innerHTML = ['<span>', '<div></div>', dateNum, '</span>'].join('');
                 if (!disable) {
-                    _td.addEventListener('click', this.chooseDate.bind(this, _date));
+                    _td.addEventListener('mousedown', this.chooseDate.bind(this, _date));
                 }
 
                 //
@@ -709,7 +710,6 @@ class jDate {
     }
 
     chooseDate(date, e) {
-        // console.log(e.shiftKey)
         var fitIndex = null;
 
         var isFit = this.datas.date.some((theDate, index) => {
@@ -726,25 +726,7 @@ class jDate {
         } else {
             switch (this.config.date.type) {
                 case jDate.Multi:
-                    // deal with shiftKey
-                    if (this.lastChooseDate && e.shiftKey) {
-                        var start = new Date(Math.min(this.lastChooseDate, date));
-                        var end = new Date(Math.max(this.lastChooseDate, date));
-                        while (start <= end) {
-                            this.datas.date.push(new Date(start));
-                            start.setDate(start.getDate() + 1);
-                        }
-                    }
-                    this.lastChooseDate = date;
                     this.datas.date.push(date);
-                    // clean date
-                    var dateCache = {};
-                    this.datas.date = this.datas.date.filter((date) => {
-                        const dateStr = Tools.getDate(date).join('-');
-                        const haveThisDate = !!dateCache[dateStr];
-                        dateCache[dateStr] = true;
-                        return !haveThisDate;
-                    });
                     break;
                 case jDate.Period:
                     this.datas.date.push(date);
@@ -755,6 +737,12 @@ class jDate {
                     break;
             }
         }
+
+        shiftKey.call(this, {
+            type: isFit ? 'cancel' : 'choose',
+            dealDate: date,
+            event: e
+        });
 
         setTimeout(() => {
             this.createMonthTable();
