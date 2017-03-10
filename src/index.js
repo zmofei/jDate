@@ -54,7 +54,7 @@ class jDate {
         var toadyDate = Tools.getDate(new Date());
         var todayTime = Tools.getTime(new Date());
         this.datas = {
-            date: (config.date && config.date.value) || [new Date(toadyDate[0], toadyDate[1], toadyDate[2])],
+            date: (config.date && config.date.value) || [],
             time: (config.time && config.time.value) || [
                 [todayTime[0], todayTime[1]],
                 [24, 0]

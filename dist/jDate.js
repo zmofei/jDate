@@ -62,7 +62,7 @@
 
 	var _i18n2 = _interopRequireDefault(_i18n);
 
-	var _shiftkey = __webpack_require__(302);
+	var _shiftkey = __webpack_require__(301);
 
 	var _shiftkey2 = _interopRequireDefault(_shiftkey);
 
@@ -113,7 +113,7 @@
 	        var toadyDate = _tools2.default.getDate(new Date());
 	        var todayTime = _tools2.default.getTime(new Date());
 	        this.datas = {
-	            date: config.date && config.date.value || [new Date(toadyDate[0], toadyDate[1], toadyDate[2])],
+	            date: config.date && config.date.value || [],
 	            time: config.time && config.time.value || [[todayTime[0], todayTime[1]], [24, 0]]
 	        };
 	        // fix time fit for config.time.step
@@ -910,7 +910,7 @@
 	    }
 	};
 	// for material animateion
-	__webpack_require__(301);
+	__webpack_require__(302);
 
 	module.exports = global.jDatev2 = global.jDate = jDate;
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
@@ -9733,7 +9733,7 @@
 	            timeBySecond = hour * 60 + min;
 	        }
 	        var timeAfterStep = Math.round(timeBySecond / step) * step;
-	        return [timeAfterStep / 60, timeAfterStep % 60];
+	        return [Math.floor(timeAfterStep / 60), timeAfterStep % 60];
 	    }
 	};
 
@@ -9770,6 +9770,64 @@
 
 /***/ },
 /* 301 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var lastChoose = {
+	    type: null, // [choose|calcel]
+	    value: null
+	};
+
+	function cleanDate(dates) {
+	    var cache = {};
+	    dates.forEach(function (date) {
+	        var dateArr = [date.getFullYear(), date.getMonth() + 1, date.getDate()];
+	        cache[dateArr.join('-')] = dateArr;
+	    });
+
+	    return Object.keys(cache).map(function (key) {
+	        return new Date(cache[key]);
+	    });
+	}
+
+	function shiftKey(obj) {
+	    var _this = this;
+
+	    if (obj.event.shiftKey) {
+	        if (lastChoose.value) {
+	            (function () {
+	                var startTime = new Date(Math.min(obj.dealDate, lastChoose.value));
+	                var endTime = new Date(Math.max(obj.dealDate, lastChoose.value));
+	                while (startTime <= endTime) {
+	                    switch (lastChoose.type) {
+	                        case 'choose':
+	                            _this.datas.date.push(new Date(startTime));
+	                            break;
+	                        case 'cancel':
+	                            _this.datas.date = _this.datas.date.filter(function (date) {
+	                                return date < startTime || date > endTime;
+	                            });
+	                            break;
+	                    }
+	                    startTime.setDate(startTime.getDate() + 1);
+	                }
+	            })();
+	        }
+	        this.datas.date = cleanDate(this.datas.date);
+	        obj.event.preventDefault();
+	    }
+	    lastChoose.type = obj.type;
+	    lastChoose.value = obj.dealDate;
+	}
+
+	exports.default = shiftKey;
+
+/***/ },
+/* 302 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9859,64 +9917,6 @@
 	        amimates[i].hide();
 	    }
 	});
-
-/***/ },
-/* 302 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var lastChoose = {
-	    type: null, // [choose|calcel]
-	    value: null
-	};
-
-	function cleanDate(dates) {
-	    var cache = {};
-	    dates.forEach(function (date) {
-	        var dateArr = [date.getFullYear(), date.getMonth() + 1, date.getDate()];
-	        cache[dateArr.join('-')] = dateArr;
-	    });
-
-	    return Object.keys(cache).map(function (key) {
-	        return new Date(cache[key]);
-	    });
-	}
-
-	function shiftKey(obj) {
-	    var _this = this;
-
-	    if (obj.event.shiftKey) {
-	        if (lastChoose.value) {
-	            (function () {
-	                var startTime = new Date(Math.min(obj.dealDate, lastChoose.value));
-	                var endTime = new Date(Math.max(obj.dealDate, lastChoose.value));
-	                while (startTime <= endTime) {
-	                    switch (lastChoose.type) {
-	                        case 'choose':
-	                            _this.datas.date.push(new Date(startTime));
-	                            break;
-	                        case 'cancel':
-	                            _this.datas.date = _this.datas.date.filter(function (date) {
-	                                return date < startTime || date > endTime;
-	                            });
-	                            break;
-	                    }
-	                    startTime.setDate(startTime.getDate() + 1);
-	                }
-	            })();
-	        }
-	        this.datas.date = cleanDate(this.datas.date);
-	        obj.event.preventDefault();
-	    }
-	    lastChoose.type = obj.type;
-	    lastChoose.value = obj.dealDate;
-	}
-
-	exports.default = shiftKey;
 
 /***/ }
 /******/ ]);

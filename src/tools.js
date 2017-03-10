@@ -44,7 +44,7 @@ var tools = {
             timeBySecond = hour * 60 + min;
         }
         let timeAfterStep = Math.round(timeBySecond / step) * step;
-        return [timeAfterStep / 60, timeAfterStep % 60]
+        return [Math.floor(timeAfterStep / 60), timeAfterStep % 60]
     }
 }
 

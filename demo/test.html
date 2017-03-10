@@ -41,17 +41,12 @@
     <script class="script">
         var date = new Date();
         new jDate(document.getElementById('date'), {
-            date: {
-                type: jDate.Multi,
-                // type: jDate.Period,
-                // type: jDate.Single,
-                // value: [
-                //     new Date(),
-                //     // new Date(date.getFullYear(), date.getMonth(), 15),
-                //     // new Date(date.getFullYear(), date.getMonth(), 19),
-                //     // date
-                // ]
-                // step: 60
+            time: {
+                type: jDate.Period,
+                // // value: [new Date(start[1], start[2], start[3])] || this.state.datas,
+                // start: new Date(2017, 01, 01),        
+                // end: new Date(2017, 03, 02)
+                step: 5
             },
             change: function (value) {
                 console.log('value changed', value);
