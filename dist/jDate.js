@@ -277,7 +277,9 @@
 	                    }
 	                    break;
 	                default:
-	                    choosedDate.push(this.datas.date[0]);
+	                    if (this.datas.date.length >= 1) {
+	                        choosedDate.push(this.datas.date[0]);
+	                    }
 	            }
 
 	            var dateDoms = [];

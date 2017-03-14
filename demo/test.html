@@ -41,12 +41,12 @@
     <script class="script">
         var date = new Date();
         new jDate(document.getElementById('date'), {
-            time: {
-                type: jDate.Period,
+            date: {
+                type: jDate.Single,
                 // // value: [new Date(start[1], start[2], start[3])] || this.state.datas,
                 // start: new Date(2017, 01, 01),        
                 // end: new Date(2017, 03, 02)
-                step: 5
+                // step: 5
             },
             change: function (value) {
                 console.log('value changed', value);

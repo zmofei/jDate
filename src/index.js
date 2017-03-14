@@ -7,7 +7,6 @@ import Tools from './tools';
 import I18N from './i18n';
 import shiftKey from './plugin/shiftkey.js';
 
-
 /**
  * jDate(tar,config)
  */
@@ -277,7 +276,9 @@ class jDate {
                 }
                 break;
             default:
-                choosedDate.push(this.datas.date[0]);
+                if (this.datas.date.length >= 1) {
+                    choosedDate.push(this.datas.date[0]);
+                }
         }
 
 
