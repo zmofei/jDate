@@ -789,6 +789,7 @@ class jDate {
         if (datas.length >= 1) {
             var firstTime = Tools.getDate(datas[0]);
             firstTime[1] = parseInt(firstTime[1], 10) + 1;
+            firstTime[1] = ('0' + firstTime[1]).slice(-2);
             switch (this.config.date.type) {
                 case jDate.Single:
                     timeStr += firstTime.join('/');
@@ -802,7 +803,7 @@ class jDate {
                     if (datas.length >= 2) {
                         var secondTime = Tools.getDate(datas[datas.length - 1]);
                         secondTime[1] = parseInt(secondTime[1], 10) + 1;
-
+                        secondTime[1] = ('0' + secondTime[1]).slice(-2);
                         if (datas[0] <= datas[datas.length - 1]) {
                             timeStr += firstTime.join('/');
                             timeStr += ' - ';
