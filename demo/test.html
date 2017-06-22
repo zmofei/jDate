@@ -41,15 +41,21 @@
     <script class="script">
         var date = new Date();
         new jDate(document.getElementById('date'), {
-            date: {
-                type: jDate.Single,
-                // // value: [new Date(start[1], start[2], start[3])] || this.state.datas,
-                // start: new Date(2017, 01, 01),        
-                // end: new Date(2017, 03, 02)
-                // step: 5
+            // date: {
+            //     type: jDate.Single,
+            //     // // value: [new Date(start[1], start[2], start[3])] || this.state.datas,
+            //     // start: new Date(2017, 01, 01),        
+            //     // end: new Date(2017, 03, 02)
+            //     // step: 5
+            // },
+            date:  {            
+                type:  jDate.Period,
+                value:  [new Date(2017, 03, 02), new Date(2017, 01, 01)]   
             },
             change: function (value) {
-                console.log('value changed', value);
+                // console.log('value changed', value.date);
+                // console.log('value changed', value.date.getFullYear());
+                // console.log('value changed', value.date.getFullYear());
             }
         });
     </script>

@@ -648,7 +648,7 @@
 	                    if (/\d{4}\/\d{1,2}\/\d{1,2}(?!\d)/.test(value)) {
 	                        var date = value.slice(0, 10);
 	                        date = date.split('/');
-	                        _this2.datas.date = [new Date(date[0], date[1], date[2])];
+	                        _this2.datas.date = [new Date(date[0], date[1] - 1, date[2])];
 	                        _this2.createMonthTable();
 	                    }
 	                }
@@ -660,8 +660,8 @@
 	                        for (var i in _date2) {
 	                            _date2[i] = _date2[i].split('/');
 	                        }
-	                        var start = new Date(_date2[0][0], _date2[0][1], _date2[0][2]);
-	                        var end = new Date(_date2[1][0], _date2[1][1], _date2[1][2]);
+	                        var start = new Date(_date2[0][0], _date2[0][1] - 1, _date2[0][2]);
+	                        var end = new Date(_date2[1][0], _date2[1][1] - 1, _date2[1][2]);
 	                        _this2.datas.date = [start, end];
 	                        _this2.createMonthTable();
 	                    }
@@ -796,6 +796,8 @@
 	                var firstTime = _tools2.default.getDate(datas[0]);
 	                firstTime[1] = parseInt(firstTime[1], 10) + 1;
 	                firstTime[1] = ('0' + firstTime[1]).slice(-2);
+	                var start = void 0;
+	                var end = void 0;
 	                switch (this.config.date.type) {
 	                    case jDate.Single:
 	                        timeStr += firstTime.join('/');
@@ -807,6 +809,7 @@
 	                        break;
 	                    case jDate.Period:
 	                        if (datas.length >= 2) {
+	                            // console.log(datas)
 	                            var secondTime = _tools2.default.getDate(datas[datas.length - 1]);
 	                            secondTime[1] = parseInt(secondTime[1], 10) + 1;
 	                            secondTime[1] = ('0' + secondTime[1]).slice(-2);
@@ -814,26 +817,24 @@
 	                                timeStr += firstTime.join('/');
 	                                timeStr += ' - ';
 	                                timeStr += secondTime.join('/');
-	                                retData.data = {
-	                                    start: datas[0],
-	                                    end: datas[datas.length - 1]
-	                                };
+	                                start = datas[0];
+	                                end = datas[datas.length - 1];
 	                            } else {
 	                                timeStr += secondTime.join('/');
 	                                timeStr += ' - ';
 	                                timeStr += firstTime.join('/');
-	                                retData.data = {
-	                                    start: datas[datas.length - 1],
-	                                    end: datas[0]
-	                                };
+	                                start = datas[datas.length - 1];
+	                                end = datas[0];
 	                            }
 	                        } else {
 	                            timeStr += firstTime.join('/');
-	                            retData = {
-	                                start: datas[0],
-	                                end: datas[0]
-	                            };
+	                            start = datas[0];
+	                            end = datas[0];
 	                        }
+	                        retData = {
+	                            start: start,
+	                            end: end
+	                        };
 	                        break;
 	                    default:
 	                }
@@ -881,6 +882,7 @@
 	            }
 
 	            if (this.config.change) {
+	                // console.warn(retData)
 	                this.config.change({
 	                    text: timeStr,
 	                    date: retData,

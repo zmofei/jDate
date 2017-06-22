@@ -645,7 +645,7 @@ class jDate {
                 if (/\d{4}\/\d{1,2}\/\d{1,2}(?!\d)/.test(value)) {
                     var date = value.slice(0, 10);
                     date = date.split('/');
-                    this.datas.date = [new Date(date[0], date[1], date[2])];
+                    this.datas.date = [new Date(date[0], date[1] - 1, date[2])];
                     this.createMonthTable();
                 }
             }
@@ -657,8 +657,8 @@ class jDate {
                     for (var i in date) {
                         date[i] = date[i].split('/');
                     }
-                    var start = new Date(date[0][0], date[0][1], date[0][2]);
-                    var end = new Date(date[1][0], date[1][1], date[1][2])
+                    var start = new Date(date[0][0], date[0][1] - 1, date[0][2]);
+                    var end = new Date(date[1][0], date[1][1] - 1, date[1][2])
                     this.datas.date = [start, end];
                     this.createMonthTable();
                 }
@@ -790,6 +790,8 @@ class jDate {
             var firstTime = Tools.getDate(datas[0]);
             firstTime[1] = parseInt(firstTime[1], 10) + 1;
             firstTime[1] = ('0' + firstTime[1]).slice(-2);
+            let start;
+            let end;
             switch (this.config.date.type) {
                 case jDate.Single:
                     timeStr += firstTime.join('/');
@@ -801,6 +803,7 @@ class jDate {
                     break;
                 case jDate.Period:
                     if (datas.length >= 2) {
+                        // console.log(datas)
                         var secondTime = Tools.getDate(datas[datas.length - 1]);
                         secondTime[1] = parseInt(secondTime[1], 10) + 1;
                         secondTime[1] = ('0' + secondTime[1]).slice(-2);
@@ -808,26 +811,24 @@ class jDate {
                             timeStr += firstTime.join('/');
                             timeStr += ' - ';
                             timeStr += secondTime.join('/');
-                            retData.data = {
-                                start: datas[0],
-                                end: datas[datas.length - 1]
-                            };
+                            start = datas[0];
+                            end = datas[datas.length - 1];
                         } else {
                             timeStr += secondTime.join('/');
                             timeStr += ' - ';
                             timeStr += firstTime.join('/');
-                            retData.data = {
-                                start: datas[datas.length - 1],
-                                end: datas[0]
-                            };
+                            start = datas[datas.length - 1];
+                            end = datas[0];
                         }
                     } else {
                         timeStr += firstTime.join('/');
-                        retData = {
-                            start: datas[0],
-                            end: datas[0]
-                        };
+                        start = datas[0];
+                        end = datas[0];
                     }
+                    retData = {
+                        start,
+                        end
+                    };
                     break;
                 default:
             }
@@ -877,6 +878,7 @@ class jDate {
 
 
         if (this.config.change) {
+            // console.warn(retData)
             this.config.change({
                 text: timeStr,
                 date: retData,
