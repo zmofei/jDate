@@ -877,7 +877,7 @@
 	            var target = this.doms.target;
 	            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
 	                target.value = timeStr;
-	            } else {
+	            } else if (!this.config.notext) {
 	                target.innerText = timeStr;
 	            }
 
